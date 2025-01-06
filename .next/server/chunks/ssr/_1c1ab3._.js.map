@@ -1,0 +1,9 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 7, "column": 0}, "map": {"version":3,"sources":["file:///Users/seba./sebe_cv_websit/app/layout.js"],"sourcesContent":["import { ThemeProvider } from './content/ThemeContext'\nimport './globals.css'\n\nexport default function RootLayout({ children }) {\n  return (\n    <html lang=\"en\" className=\"scroll-smooth\">\n      <body className=\"min-h-screen w-full max-w-[1920px] mx-auto overflow-x-hidden\">\n        <ThemeProvider>\n          <div className=\"relative w-full\">\n            {children}\n          </div>\n        </ThemeProvider>\n      </body>\n    </html>\n  )\n}\n"],"names":[],"mappings":";;;;;;;;;;;;AAGe,SAAS,WAAW,EAAE,QAAQ,EAAE;IAC7C,qBACE,8OAAC;QAAK,MAAK;QAAK,WAAU;kBACxB,cAAA,8OAAC;YAAK,WAAU;sBACd,cAAA,8OAAC;0BACC,cAAA,8OAAC;oBAAI,WAAU;8BACZ;;;;;;;;;;;;;;;;;;;;;AAMb"}},
+    {"offset": {"line": 50, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}},
+    {"offset": {"line": 61, "column": 0}, "map": {"version":3,"sources":["file:///Users/seba./sebe_cv_websit/node_modules/next/src/server/route-modules/app-page/vendored/rsc/react-jsx-dev-runtime.ts"],"sourcesContent":["module.exports = require('../../module.compiled').vendored[\n  'react-rsc'\n].ReactJsxDevRuntime\n"],"names":["module","exports","require","vendored","ReactJsxDevRuntime"],"mappings":";AAAAA,OAAOC,OAAO,GAAGC,QAAQ,0HAAyBC,QAAQ,CACxD,YACD,CAACC,kBAAkB","ignoreList":[0]}},
+    {"offset": {"line": 63, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}}]
+}
