@@ -23,7 +23,7 @@ import toast, { Toaster } from 'react-hot-toast';
 // Content configuration for multilingual support
 const content = {
   EN: {
-    title: "FIND ME ONnnnnn",
+    title: "FIND ME ONnnnnnk",
     subtitle: "Feel free to connect with me ",
     formLabels: {
       name: "Your Name",
