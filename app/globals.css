@@ -1,0 +1,34 @@
+/* app/globals.css */
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --transition-duration: 300ms;
+}
+
+body {
+  transition: background-color var(--transition-duration) ease,
+              color var(--transition-duration) ease;
+}
+
+/* Dark mode styles */
+.dark {
+  @apply bg-gray-900;
+  color-scheme: dark;
+}
+
+/* Light mode styles */
+:root:not(.dark) {
+  @apply bg-white;
+  color-scheme: light;
+}
+
+/* Smooth transitions for theme changes */
+* {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: var(--transition-duration);
+}

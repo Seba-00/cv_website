@@ -1,0 +1,8 @@
+node_modules
+.next
+
+echo ".next
+
+dist
+build
+public/videos/*.mov" > .gitignore
