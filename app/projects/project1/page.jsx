@@ -1,20 +1,21 @@
 'use client';
-
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useTheme } from '../../context/ThemeContext';
 import { AnimatedBackground } from '../../components/AnimatedBackground';
-import { FaGithub, FaExternalLinkAlt, FaArrowLeft, FaEye, FaFlask } from 'react-icons/fa';
+import { FaGithub, FaExternalLinkAlt, FaArrowLeft } from 'react-icons/fa';
 import { TbBrandNextjs, TbBrandMongodb } from 'react-icons/tb';
-import { SiExpress, SiFlask, SiGooglecolab, SiTailwindcss } from 'react-icons/si';
+import { SiExpress, SiTailwindcss } from 'react-icons/si';
 import { FaNode } from 'react-icons/fa';
-import { IoFlask, IoLogoPython } from 'react-icons/io5';
 
+// =================
+// CONTENT CONFIGURATION
+// =================
 const content = {
   EN: {
-    title: "Eye Disease Analysis System ",
+    title: "Geovision Explorer",
     description: "A full-stack e-commerce solution with modern architecture and seamless user experience.",
     overview: "This e-commerce platform provides a comprehensive solution for online retail, featuring real-time inventory management, secure payment processing, and an intuitive admin dashboard.",
     features: [
@@ -28,21 +29,27 @@ const content = {
     technical: {
       title: "Technical Details",
       stack: [
-        { name: "Python", icon: IoLogoPython },
-        { name: "Google colab", icon: SiGooglecolab },
-        { name: "Computer Vision", icon: FaEye },
-        { name: "Flask", icon: SiFlask},
-    
+        { name: "Next.js", icon: TbBrandNextjs },
+        { name: "Node.js", icon: FaNode },
+        { name: "Express", icon: SiExpress },
+        { name: "MongoDB", icon: TbBrandMongodb },
+        { name: "Tailwind CSS", icon: SiTailwindcss }
       ],
       challenges: "One of the main challenges was implementing real-time inventory updates across multiple sessions while maintaining system performance.",
       solutions: "We implemented WebSocket connections for real-time updates and utilized Redis caching to optimize database queries."
     },
     images: [
-      "/images/4eye.png",
-      "/images/3eye.png",
-      "/images/2eye.png"
+      "/images/geo1.png",
+      "/images/geo2.png",
+      "/images/geo3.png",
+      "/images/geo4.png",
+      "/images/geo5.png",
+      "/images/geo6.png",
+      "/images/geo7.JPG",
+      "/images/geo8.JPG",
+      "/images/geo9.JPG"
     ],
-    video: "/videos/eyedemo.mov",
+    video: "SaEzj-ocdCo",
     links: {
       github: "https://github.com/yourusername/ecommerce-platform",
       live: "https://ecommerce-platform-demo.com",
@@ -50,8 +57,7 @@ const content = {
     }
   },
   AR: {
-    // Arabic content structure (mirror of English)
-    title: "منصة التجارة الإلكترونية",
+    title: "  الرؤية الهندسية ",
     description: "حل متكامل للتجارة الإلكترونية مع هيكلية حديثة وتجربة مستخدم سلسة.",
     overview: "توفر منصة التجارة الإلكترونية هذه حلاً شاملاً للبيع بالتجزئة عبر الإنترنت، مع إدارة المخزون في الوقت الفعلي، ومعالجة الدفع الآمن، ولوحة تحكم سهلة للمسؤول.",
     features: [
@@ -75,11 +81,17 @@ const content = {
       solutions: "قمنا بتنفيذ اتصالات WebSocket للتحديثات في الوقت الفعلي واستخدمنا التخزين المؤقت Redis لتحسين استعلامات قاعدة البيانات."
     },
     images: [
-      "/images/project1/dashboard.jpg",
-      "/images/project1/catalog.jpg",
-      "/images/project1/cart.jpg"
+      "/images/geo1.png",
+      "/images/geo2.png",
+      "/images/geo3.png",
+      "/images/geo4.png",
+      "/images/geo5.png",
+      "/images/geo6.png",
+      "/images/geo7.JPG",
+      "/images/geo8.JPG",
+      "/images/geo9.JPG"
     ],
-      video: "/videos/project-demo.mp4",
+    video: "SaEzj-ocdCo",
     links: {
       github: "https://github.com/yourusername/ecommerce-platform",
       live: "https://ecommerce-platform-demo.com",
@@ -88,6 +100,9 @@ const content = {
   }
 };
 
+// =================
+// MAIN COMPONENT
+// =================
 export default function Project1() {
   const { theme, language } = useTheme();
   const currentContent = content[language];
@@ -98,14 +113,14 @@ export default function Project1() {
     <div className="min-h-screen relative">
       <AnimatedBackground theme={theme} scrollMultiplier={0.5} />
       
+      {/* Main Content Container */}
       <div className="relative z-10 max-w-6xl mx-auto px-6 py-20">
+        
+        {/* Back Button */}
         <Link href="/#projects">
           <motion.div
             className="inline-flex items-center gap-2 mb-8 px-4 py-2 rounded-lg"
-            style={{ 
-              backgroundColor: `${theme.primary}15`,
-              color: theme.primary
-            }}
+            style={{ backgroundColor: `${theme.primary}15`, color: theme.primary }}
             whileHover={{ x: isRTL ? 8 : -8 }}
           >
             <FaArrowLeft className={`${isRTL ? 'ml-2 rotate-180' : 'mr-2'}`} />
@@ -113,6 +128,7 @@ export default function Project1() {
           </motion.div>
         </Link>
 
+        {/* Project Title */}
         <motion.h1
           className="text-4xl md:text-5xl font-bold mb-4"
           style={{ color: theme.text }}
@@ -122,6 +138,7 @@ export default function Project1() {
           {currentContent.title}
         </motion.h1>
 
+        {/* Project Description */}
         <motion.p
           className="text-xl mb-8"
           style={{ color: theme.textSecondary }}
@@ -132,18 +149,19 @@ export default function Project1() {
           {currentContent.description}
         </motion.p>
 
+        {/* Two Column Layout */}
         <div className="grid md:grid-cols-2 gap-8 mb-12">
+          {/* Left Column - Project Info */}
           <motion.div
-            className="space-y-6"
+            className="space-y-6 h-fit"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <div className="p-6 rounded-xl backdrop-blur-sm"
-              style={{ 
-                backgroundColor: `${theme.primary}05`,
-                border: `1px solid ${theme.primary}20`
-              }}
+            {/* Overview Card */}
+            <div
+              className="p-6 rounded-xl backdrop-blur-sm h-full"
+              style={{ backgroundColor: `${theme.primary}05`, border: `1px solid ${theme.primary}20` }}
             >
               <h2 className="text-2xl font-bold mb-4" style={{ color: theme.primary }}>
                 Overview
@@ -151,11 +169,10 @@ export default function Project1() {
               <p style={{ color: theme.text }}>{currentContent.overview}</p>
             </div>
 
-            <div className="p-6 rounded-xl backdrop-blur-sm"
-              style={{ 
-                backgroundColor: `${theme.primary}05`,
-                border: `1px solid ${theme.primary}20`
-              }}
+            {/* Features Card */}
+            <div
+              className="p-6 rounded-xl backdrop-blur-sm h-full"
+              style={{ backgroundColor: `${theme.primary}05`, border: `1px solid ${theme.primary}20` }}
             >
               <h2 className="text-2xl font-bold mb-4" style={{ color: theme.primary }}>
                 Features
@@ -171,13 +188,15 @@ export default function Project1() {
             </div>
           </motion.div>
 
+          {/* Right Column - Images */}
           <motion.div
             className="space-y-6"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <div className="relative aspect-video rounded-xl overflow-hidden">
+            {/* Main Image */}
+            <div className="relative aspect-[9/16] rounded-xl overflow-hidden">
               <Image
                 src={currentContent.images[selectedImage]}
                 alt="Project Preview"
@@ -186,7 +205,8 @@ export default function Project1() {
                 className="transition-all duration-500"
               />
             </div>
-            
+
+            {/* Image Thumbnails */}
             <div className="flex gap-4 overflow-x-auto py-2">
               {currentContent.images.map((image, index) => (
                 <motion.button
@@ -194,44 +214,22 @@ export default function Project1() {
                   className={`relative w-20 h-20 rounded-lg overflow-hidden ${
                     selectedImage === index ? 'ring-2' : ''
                   }`}
-                  style={{ 
-                    ringColor: theme.primary,
-                    opacity: selectedImage === index ? 1 : 0.6
-                  }}
+                  style={{ ringColor: theme.primary, opacity: selectedImage === index ? 1 : 0.6 }}
                   whileHover={{ opacity: 1 }}
                   onClick={() => setSelectedImage(index)}
                 >
-                  <Image
-                    src={image}
-                    alt={`Preview ${index + 1}`}
-                    layout="fill"
-                    objectFit="cover"
-                  />
+                  <Image src={image} alt={`Preview ${index + 1}`} layout="fill" objectFit="cover" />
                 </motion.button>
               ))}
             </div>
           </motion.div>
         </div>
-          {currentContent.video && (
-              <motion.div
-                  className="relative aspect-video rounded-xl overflow-hidden mb-8"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-              >
-                  <video controls className="w-full h-full object-cover">
-                      <source src={currentContent.video} type="video/mp4" />
-                      Your browser does not support the video tag.
-                  </video>
-              </motion.div>
-          )}
 
+
+        {/* Technical Details Section */}
         <motion.div
           className="p-6 rounded-xl backdrop-blur-sm mb-8"
-          style={{ 
-            backgroundColor: `${theme.primary}05`,
-            border: `1px solid ${theme.primary}20`
-          }}
+          style={{ backgroundColor: `${theme.primary}05`, border: `1px solid ${theme.primary}20` }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
@@ -239,8 +237,8 @@ export default function Project1() {
           <h2 className="text-2xl font-bold mb-6" style={{ color: theme.primary }}>
             {currentContent.technical.title}
           </h2>
-          
           <div className="grid md:grid-cols-2 gap-8">
+            {/* Tech Stack */}
             <div>
               <h3 className="text-xl font-semibold mb-4" style={{ color: theme.text }}>
                 Tech Stack
@@ -250,10 +248,7 @@ export default function Project1() {
                   <motion.div
                     key={index}
                     className="flex items-center gap-2 px-3 py-2 rounded-lg"
-                    style={{ 
-                      backgroundColor: `${theme.primary}15`,
-                      color: theme.primary
-                    }}
+                    style={{ backgroundColor: `${theme.primary}15`, color: theme.primary }}
                     whileHover={{ scale: 1.05 }}
                   >
                     <tech.icon className="w-5 h-5" />
@@ -263,6 +258,7 @@ export default function Project1() {
               </div>
             </div>
 
+            {/* Challenges & Solutions */}
             <div>
               <h3 className="text-xl font-semibold mb-4" style={{ color: theme.text }}>
                 Challenges & Solutions
@@ -270,13 +266,12 @@ export default function Project1() {
               <p className="mb-4" style={{ color: theme.textSecondary }}>
                 {currentContent.technical.challenges}
               </p>
-              <p style={{ color: theme.textSecondary }}>
-                {currentContent.technical.solutions}
-              </p>
+              <p style={{ color: theme.textSecondary }}>{currentContent.technical.solutions}</p>
             </div>
           </div>
         </motion.div>
 
+        {/* Footer Links */}
         <motion.div
           className="flex justify-center gap-6"
           initial={{ opacity: 0, y: 20 }}
@@ -288,25 +283,18 @@ export default function Project1() {
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-6 py-3 rounded-lg"
-            style={{ 
-              backgroundColor: `${theme.primary}15`,
-              color: theme.primary
-            }}
+            style={{ backgroundColor: `${theme.primary}15`, color: theme.primary }}
             whileHover={{ scale: 1.05 }}
           >
             <FaGithub className="w-5 h-5" />
             GitHub
           </motion.a>
-          
           <motion.a
             href={currentContent.links.live}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-6 py-3 rounded-lg"
-            style={{ 
-              backgroundColor: theme.primary,
-              color: theme.bg.split('-')[0].replace('from-', '')
-            }}
+            style={{ backgroundColor: theme.primary, color: theme.bg.split('-')[0].replace('from-', '') }}
             whileHover={{ scale: 1.05 }}
           >
             <FaExternalLinkAlt className="w-5 h-5" />

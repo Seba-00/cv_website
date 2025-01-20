@@ -1,29 +1,31 @@
-// app/context/ThemeContext.js
-
 'use client';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const themes = {
   light: {
-    bg: 'from-white to-gray-50',
-    text: '#1a1a1a',
-    textSecondary: '#666666',
-    primary: '#3b82f6',
-    secondary: '#da627d',
-    navBg: 'rgba(255, 255, 255, 0.8)',
-    cardBg: 'rgba(255, 255, 255, 0.9)',
-    borderColor: 'rgba(59, 130, 246, 0.2)'
+    bg: '#f8f9fa', // Very light gray, almost white
+    text: '#212529', // Dark gray, almost black
+    textSecondary: '#6c757d', // Medium gray
+    primary: '#1e88e5', // A slightly darker, more sophisticated blue
+    secondary: '#4caf50', // A slightly muted green
+    accent: '#ffca28', // A slightly muted yellow
+    navBg: 'rgba(255, 255, 255, 0.9)', // Semi-transparent white
+    cardBg: 'rgba(255, 255, 255, 0.95)', // Slightly less transparent white
+    borderColor: 'rgba(30, 136, 229, 0.2)', // Semi-transparent primary blue
+    shadowColor: 'rgba(0, 0, 0, 0.1)', // Light shadow
   },
   dark: {
-    bg: 'from-gray-900 to-black',
-    text: '#ffffff',
-    textSecondary: '#a3a3a3',
-    primary: '#60a5fa',
-    secondary: '#34d399',
-    navBg: 'rgba(0, 0, 0, 0.8)',
-    cardBg: 'rgba(17, 17, 17, 0.9)',
-    borderColor: 'rgba(96, 165, 250, 0.2)'
-  }
+    bg: 'from-gray-900 to-gray-800', // Dark gray to slightly lighter dark gray
+    text: '#f8f9fa', // Very light gray, almost white
+    textSecondary: '#adb5bd', // Light gray
+    primary: '#17a2b8', // A teal blue
+    secondary: '#28a745', // A vibrant green
+    accent: '#ffc107', // A warm yellow
+    navBg: 'rgba(33, 37, 41, 0.9)', // Semi-transparent dark gray
+    cardBg: 'rgba(52, 58, 64, 0.95)', // Slightly less transparent dark gray
+    borderColor: 'rgba(23, 162, 184, 0.2)', // Semi-transparent primary teal
+    shadowColor: 'rgba(255, 255, 255, 0.1)', // Light shadow
+  },
 };
 
 const ThemeContext = createContext();
@@ -34,15 +36,13 @@ export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(themes.light);
 
   useEffect(() => {
-    // Check local storage for saved preferences
     const savedTheme = localStorage.getItem('theme');
     const savedLanguage = localStorage.getItem('language');
-    
+
     if (savedTheme) {
       setIsDark(savedTheme === 'dark');
       setTheme(themes[savedTheme]);
     } else {
-      // Check system preference
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       setIsDark(prefersDark);
       setTheme(prefersDark ? themes.dark : themes.light);
@@ -52,7 +52,6 @@ export function ThemeProvider({ children }) {
       setLanguage(savedLanguage);
     }
 
-    // Apply theme to document
     document.documentElement.classList.toggle('dark', isDark);
   }, []);
 

@@ -1,4 +1,5 @@
 'use client';
+
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -46,7 +47,7 @@ const content = {
       "/images/geo8.JPG",
       "/images/geo9.JPG"
     ],
-      video: "/videos/denoo.mov",
+    video: "<div style=\"padding:57.69% 0 0 0;position:relative;\"><iframe src=\"https://player.vimeo.com/video/1045207510?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479&byline=0&portrait=0&title=0&add_to_later=0&share=0&controls=1\" frameborder=\"0\" allow=\"autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media\" style=\"position:absolute;top:0;left:0;width:100%;height:100%;\" title=\"Eye Disease Analysis System\"></iframe></div><script src=\"https://player.vimeo.com/api/player.js\"></script>",
     links: {
       github: "https://github.com/yourusername/ecommerce-platform",
       live: "https://ecommerce-platform-demo.com",
@@ -88,7 +89,7 @@ const content = {
       "/images/geo8.JPG",
       "/images/geo9.JPG"
     ],
-      video: "/videos/project-demo.mp4",
+    video: "<div style=\"padding:57.69% 0 0 0;position:relative;\"><iframe src=\"https://player.vimeo.com/video/1045207510?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479&byline=0&portrait=0&title=0&add_to_later=0&share=0&controls=1\" frameborder=\"0\" allow=\"autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media\" style=\"position:absolute;top:0;left:0;width:100%;height:100%;\" title=\"Eye Disease Analysis System\"></iframe></div><script src=\"https://player.vimeo.com/api/player.js\"></script>",
     links: {
       github: "https://github.com/yourusername/ecommerce-platform",
       live: "https://ecommerce-platform-demo.com",
@@ -199,19 +200,16 @@ export default function Project1() {
             </div>
           </motion.div>
         </div>
-          {currentContent.video && (
-              <motion.div
-                  className="relative aspect-video rounded-xl overflow-hidden mb-8"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-              >
-                  <video controls className="w-full h-full object-cover">
-                      <source src={currentContent.video} type="video/mp4" />
-                      Your browser does not support the video tag.
-                  </video>
-              </motion.div>
-          )}
+        {currentContent.video && (
+          <motion.div
+            className="relative aspect-video rounded-xl overflow-hidden mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <div dangerouslySetInnerHTML={{ __html: currentContent.video }} />
+          </motion.div>
+        )}
         <motion.div
           className="p-6 rounded-xl backdrop-blur-sm mb-8"
           style={{ backgroundColor: `${theme.primary}05`, border: `1px solid ${theme.primary}20` }}

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence ,useScroll, useTransform  } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
 import { FiSun, FiMoon } from 'react-icons/fi';
 import { IoLanguage } from 'react-icons/io5';
@@ -17,7 +17,7 @@ const content = {
       'Full Stack Developer',
       'UI/UX Enthusiast',
       'Problem Solver',
-      'Tech Explorer'
+      'Tech Explorer',
     ],
     nav: {
       home: 'Home',
@@ -27,7 +27,7 @@ const content = {
       contact: 'Contact',
     },
     projectButton: 'See My Projects',
-    graduateStatus: 'Computer Science Graduate'
+    graduateStatus: 'Computer Science Graduate',
   },
   AR: {
     greeting: 'مرحباً، أنا',
@@ -37,7 +37,7 @@ const content = {
       'مطور ويب شامل',
       'مصمم واجهات',
       'حلال مشاكل',
-      'مستكشف تقني'
+      'مستكشف تقني',
     ],
     nav: {
       home: 'الرئيسية',
@@ -47,12 +47,9 @@ const content = {
       contact: 'اتصل بي',
     },
     projectButton: 'شاهد مشاريعي',
-    graduateStatus: 'خريج علوم الحاسوب'
-  }
+    graduateStatus: 'خريج علوم الحاسوب',
+  },
 };
-
-
-
 
 const NavItem = ({ title, active, onClick, theme }) => (
   <motion.button
@@ -63,8 +60,8 @@ const NavItem = ({ title, active, onClick, theme }) => (
   >
     <motion.span
       className="relative z-10 text-lg transition-colors duration-300"
-      style={{ 
-        color: active ? theme.primary : theme.textSecondary
+      style={{
+        color: active ? theme.primary : theme.textSecondary,
       }}
     >
       {title}
@@ -74,7 +71,7 @@ const NavItem = ({ title, active, onClick, theme }) => (
         layoutId="navIndicator"
         className="absolute inset-0 rounded-md"
         style={{ backgroundColor: `${theme.primary}20` }}
-        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+        transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
       />
     )}
   </motion.button>
@@ -91,7 +88,7 @@ export default function Hero() {
 
   const navItems = Object.entries(currentContent.nav).map(([id, title]) => ({
     id,
-    title
+    title,
   }));
 
   useEffect(() => {
@@ -132,27 +129,21 @@ export default function Hero() {
     }
   };
 
-  const navOpacity = useTransform(scrollY, 
-    [0, 100], 
-    [0.8, 1]
-  );
-  
-  const navBlur = useTransform(scrollY,
-    [0, 100],
-    ['blur(0px)', 'blur(10px)']
-  );
+  const navOpacity = useTransform(scrollY, [0, 100], [0.8, 1]);
+
+  const navBlur = useTransform(scrollY, [0, 100], ['blur(0px)', 'blur(10px)']);
 
   return (
-     <div id="home" ref={heroRef} className="relative min-h-screen overflow-hidden">
+    <div id="home" ref={heroRef} className="relative min-h-screen overflow-hidden">
       <AnimatedBackground theme={theme} scrollMultiplier={1} />
-      
-      <motion.nav 
+
+      <motion.nav
         className="fixed top-0 left-0 right-0 z-50"
-        style={{ 
+        style={{
           backgroundColor: theme.navBg,
           opacity: navOpacity,
           backdropFilter: navBlur,
-          borderBottom: `1px solid ${theme.primary}15`
+          borderBottom: `1px solid ${theme.borderColor}`,
         }}
       >
         <div className="max-w-6xl mx-auto px-6">
@@ -168,7 +159,7 @@ export default function Hero() {
                 />
               ))}
             </div>
-            
+
             <div className="md:hidden">
               <motion.button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -194,6 +185,7 @@ export default function Hero() {
               >
                 <FaGithub className="w-5 h-5" />
               </motion.a>
+
               <motion.a
                 href="https://www.linkedin.com/in/seba-salamah-7916742b8/"
                 target="_blank"
@@ -205,6 +197,7 @@ export default function Hero() {
               >
                 <FaLinkedin className="w-5 h-5" />
               </motion.a>
+
               <motion.button
                 onClick={toggleLanguage}
                 whileHover={{ scale: 1.05, y: -2 }}
@@ -220,6 +213,7 @@ export default function Hero() {
                   {language === 'EN' ? 'عربي' : 'English'}
                 </span>
               </motion.button>
+
               <motion.button
                 onClick={toggleTheme}
                 whileHover={{ scale: 1.1, y: -2 }}
@@ -251,8 +245,10 @@ export default function Hero() {
                     className="w-full text-left px-4 py-2 rounded-lg"
                     whileHover={{ x: 8 }}
                     style={{
-                      backgroundColor: activeSection === item.id ? `${theme.primary}15` : 'transparent',
-                      color: activeSection === item.id ? theme.primary : theme.textSecondary,
+                      backgroundColor:
+                        activeSection === item.id ? `${theme.primary}15` : 'transparent',
+                      color:
+                        activeSection === item.id ? theme.primary : theme.textSecondary,
                     }}
                   >
                     {item.title}
@@ -262,9 +258,8 @@ export default function Hero() {
             </motion.div>
           )}
         </AnimatePresence>
-    
-
       </motion.nav>
+
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen text-center px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -285,7 +280,10 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-5xl md:text-7xl font-bold tracking-tight"
-            style={{ color: theme.text }}
+            style={{
+              color: theme.text,
+              fontFamily: 'Montserrat, sans-serif', // Apply the font here
+            }}
           >
             {currentContent.name}
           </motion.h1>
@@ -322,14 +320,14 @@ export default function Hero() {
           <motion.button
             onClick={() => scrollTo('projects')}
             className="px-8 py-4 rounded-xl font-medium shadow-lg"
-            style={{ 
+            style={{
               backgroundColor: theme.primary,
               color: isDark ? theme.bg.split('-')[0].replace('from-', '') : theme.text,
-              boxShadow: `0 10px 15px -3px ${theme.primary}30`
+              boxShadow: `0 10px 15px -3px ${theme.shadowColor}`,
             }}
-            whileHover={{ 
+            whileHover={{
               scale: 1.05,
-              boxShadow: `0 20px 25px -5px ${theme.primary}40`
+              boxShadow: `0 20px 25px -5px ${theme.shadowColor}`,
             }}
             whileTap={{ scale: 0.95 }}
           >
@@ -338,5 +336,5 @@ export default function Hero() {
         </motion.div>
       </div>
     </div>
-          );
+  );
 }
