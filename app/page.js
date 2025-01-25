@@ -1,5 +1,5 @@
-'use client'
-
+// app/page.js
+'use client';
 import { useScrollAnimation } from './hooks/useScrollAnimation'
 import { useTheme } from './context/ThemeContext'
 import Hero from './sections/Hero'
@@ -10,28 +10,21 @@ import Contact from './sections/Contact'
 
 export default function Home() {
   useScrollAnimation();
-  const { theme } = useTheme();
+  const { isDark } = useTheme();
 
   return (
-    <main 
-      className="relative min-h-screen"
-      style={{
-        background: theme.bg === 'from-gray-50 to-gray-100' 
-          ? 'var(--gradient-light)' 
-          : 'var(--gradient-dark)'
-      }}
-    >
+    <main className={`relative min-h-screen ${isDark ? 'dark' : ''}`}>
       <Hero />
-      <div className="section-transition bg-opacity-90">
+      <div className="section-transition bg-background-card">
         <About />
       </div>
-      <div className="section-transition bg-opacity-90">
+      <div className="section-transition bg-background-card">
         <Skills />
       </div>
-      <div className="section-transition bg-opacity-90">
+      <div className="section-transition bg-background-card">
         <Projects />
       </div>
-      <div className="section-transition bg-opacity-90">
+      <div className="section-transition bg-background-card">
         <Contact />
       </div>
     </main>

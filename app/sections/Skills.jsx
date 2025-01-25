@@ -1,19 +1,30 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../../app/context/ThemeContext';
-import { FaReact, FaNodeJs, FaPython, FaDatabase, FaDocker, FaAws } from 'react-icons/fa';
+import { 
+  FaReact, 
+  FaNodeJs, 
+  FaPython, 
+  FaDatabase, 
+  FaDocker, 
+  FaAws,
+  FaPaintBrush,
+  FaServer,
+  FaCloud
+} from 'react-icons/fa';
 import { SiTypescript, SiGraphql } from 'react-icons/si';
+import { AnimatedBackground } from '../components/AnimatedBackground';
 
 const content = {
   EN: {
-    title: "Technical Skills",
-    subtitle: "Transforming ideas into reality through code",
+    title: "Technical Expertise",
+    subtitle: "Transforming concepts into digital solutions",
     categories: {
       frontend: "Frontend Development",
-      backend: "Backend Development",
-      database: "Database & Cloud",
+      backend: "Backend Architecture",
+      database: "Cloud & Infrastructure",
     },
     skills: [
       { name: "React", icon: FaReact, level: 90, category: "frontend" },
@@ -28,11 +39,11 @@ const content = {
   },
   AR: {
     title: "المهارات التقنية",
-    subtitle: "تحويل الأفكار إلى واقع من خلال البرمجة",
+    subtitle: "تحويل الأفكار إلى حلول رقمية",
     categories: {
-      frontend: "تطوير واجهات المستخدم",
-      backend: "تطوير الخدمات الخلفية",
-      database: "قواعد البيانات والسحابة",
+      frontend: "تطوير الواجهات",
+      backend: "هندسة الخلفية",
+      database: "البنية التحتية والسحابة",
     },
     skills: [
       { name: "React", icon: FaReact, level: 90, category: "frontend" },
@@ -47,65 +58,80 @@ const content = {
   }
 };
 
-const SkillCard = ({ skill, theme, isSelected }) => {
-  const [isHovered, setIsHovered] = useState(false);
+const RadialProgress = ({ percentage }) => {
+  const circumference = 2 * Math.PI * 40;
+  const offset = circumference - (percentage / 100) * circumference;
 
+  return (
+    <div className="relative w-24 h-24">
+      <svg className="transform -rotate-90 w-24 h-24">
+        <circle
+          cx="48"
+          cy="48"
+          r="40"
+          stroke="currentColor"
+          strokeWidth="8"
+          fill="transparent"
+          className="text-primary/20"
+        />
+        <circle
+          cx="48"
+          cy="48"
+          r="40"
+          stroke="currentColor"
+          strokeWidth="8"
+          fill="transparent"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          className="text-primary transition-all duration-1000"
+          strokeLinecap="round"
+        />
+      </svg>
+      <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-lg font-bold text-primary">
+        {percentage}%
+      </span>
+    </div>
+  );
+};
+
+const SkillCard = ({ skill, isSelected }) => {
   return (
     <motion.div
       layout
       initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ 
-        opacity: 1, 
-        scale: 1,
-        filter: isSelected ? 'none' : 'grayscale(0.5)'
-      }}
+      animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.8 }}
       transition={{ duration: 0.5 }}
-      className="relative p-6 rounded-xl"
-      style={{ 
-        backgroundColor: `${theme.primary}${isHovered ? '20' : '10'}`,
-        border: `1px solid ${theme.primary}${isHovered ? '30' : '20'}`,
-      }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      whileHover={{ scale: 1.05, y: -5 }}
+      className="p-6 rounded-2xl bg-background-card border border-border hover:border-primary/50 shadow-lg hover:shadow-xl transition-all"
+      whileHover={{ y: -5 }}
     >
-      <div className="flex items-center space-x-4">
-        <skill.icon 
-          className="transition-all duration-300"
-          size={32} 
-          style={{ 
-            color: theme.primary,
-            transform: isHovered ? 'scale(1.2)' : 'scale(1)'
-          }} 
-        />
-        <div className="flex-1">
-          <h3 className="text-lg font-semibold mb-2" style={{ color: theme.text }}>
-            {skill.name}
-          </h3>
-          <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${skill.level}%` }}
-              transition={{ duration: 1, delay: 0.2 }}
-              className="absolute top-0 left-0 h-full rounded-full"
-              style={{ backgroundColor: theme.primary }}
-            />
-          </div>
-          <div className="mt-1 text-sm" style={{ color: theme.textSecondary }}>
-            {skill.level}%
-          </div>
+      <div className="flex flex-col items-center space-y-4">
+        <div className="text-4xl text-primary">
+          <skill.icon />
         </div>
+        <h3 className="text-xl font-semibold text-text-primary">
+          {skill.name}
+        </h3>
+        <RadialProgress percentage={skill.level} />
+        <span className="text-sm text-text-secondary">
+          {content.EN.categories[skill.category]}
+        </span>
       </div>
     </motion.div>
   );
 };
 
 export default function Skills() {
-  const { theme, language } = useTheme();
+  const { language } = useTheme();
   const currentContent = content[language];
   const isRTL = language === 'AR';
   const [selectedCategory, setSelectedCategory] = useState('all');
+
+  const categoryIcons = {
+    frontend: FaPaintBrush,
+    backend: FaServer,
+    database: FaCloud
+  };
 
   const filteredSkills = selectedCategory === 'all' 
     ? currentContent.skills
@@ -114,70 +140,69 @@ export default function Skills() {
   return (
     <section 
       id="skills" 
-      className="min-h-screen relative overflow-hidden py-20"
+      className="min-h-screen relative py-20"
       dir={isRTL ? 'rtl' : 'ltr'}
     >
-      <div className="absolute inset-0" style={{ backgroundColor: theme.bg }}>
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute inset-0" 
-            style={{
-              backgroundImage: `radial-gradient(circle at 1px 1px, ${theme.textSecondary} 1px, transparent 0)`,
-              backgroundSize: '40px 40px'
-            }}
-          />
-        </div>
-      </div>
-
-      <div className="max-w-6xl mx-auto px-6 relative z-10">
+      <AnimatedBackground />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold mb-4" style={{ color: theme.text }}>
+          <motion.h1 
+            className="text-4xl md:text-5xl font-bold mb-4 text-text-primary"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
             {currentContent.title}
-          </h1>
-          <p className="text-xl font-medium mb-8" style={{ color: theme.textSecondary }}>
+          </motion.h1>
+          <motion.p 
+            className="text-xl text-text-secondary max-w-2xl mx-auto"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
             {currentContent.subtitle}
-          </p>
+          </motion.p>
+        </div>
 
-          <div className="flex flex-wrap justify-center gap-4 mb-12">
-            <motion.button
-              onClick={() => setSelectedCategory('all')}
-              className={`px-6 py-2 rounded-full transition-all duration-300`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              style={{
-                backgroundColor: selectedCategory === 'all' ? theme.primary : `${theme.primary}20`,
-                color: selectedCategory === 'all' ? theme.bg : theme.text
-              }}
-            >
-              All
-            </motion.button>
-            {Object.entries(currentContent.categories).map(([key, value]) => (
+        {/* Category Filters */}
+        <motion.div 
+          className="flex flex-wrap justify-center gap-4 mb-16"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          {['all', ...Object.keys(currentContent.categories)].map((category) => {
+            const Icon = category === 'all' ? null : categoryIcons[category];
+            return (
               <motion.button
-                key={key}
-                onClick={() => setSelectedCategory(key)}
-                className={`px-6 py-2 rounded-full transition-all duration-300`}
+                key={category}
+                onClick={() => setSelectedCategory(category === 'all' ? 'all' : category)}
+                className={`flex items-center gap-2 px-6 py-3 rounded-full transition-all ${
+                  selectedCategory === category 
+                    ? 'bg-primary text-background shadow-lg' 
+                    : 'bg-background-card text-text-primary hover:bg-primary/10'
+                }`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                style={{
-                  backgroundColor: selectedCategory === key ? theme.primary : `${theme.primary}20`,
-                  color: selectedCategory === key ? theme.bg : theme.text
-                }}
               >
-                {value}
+                {Icon && <Icon className="w-5 h-5" />}
+                {category === 'all' 
+                  ? language === 'EN' ? 'All' : 'الكل'
+                  : currentContent.categories[category]}
               </motion.button>
-            ))}
-          </div>
-        </div>
+            );
+          })}
+        </motion.div>
 
+        {/* Skills Grid */}
         <motion.div 
           layout
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
         >
           <AnimatePresence mode="popLayout">
             {filteredSkills.map((skill) => (
               <SkillCard
                 key={skill.name}
                 skill={skill}
-                theme={theme}
                 isSelected={selectedCategory === 'all' || skill.category === selectedCategory}
               />
             ))}

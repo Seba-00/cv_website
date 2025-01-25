@@ -1,13 +1,33 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
 import { FiDownload } from 'react-icons/fi';
-import { AnimatedBackground } from '../components/AnimatedBackground';
+import { FaGraduationCap, FaUniversity } from 'react-icons/fa';
+import { useGesture } from '@use-gesture/react';
 
-// Content object remains the same...
+
+
+// Custom reduced motion hook
+const useReducedMotion = () => {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setPrefersReducedMotion(mediaQuery.matches);
+    
+    const handler = (e) => setPrefersReducedMotion(e.matches);
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
+  }, []);
+
+  return prefersReducedMotion;
+};
+
 const content = {
   EN: {
     title: "About Me",
@@ -24,7 +44,9 @@ const content = {
       "Digital Creator",
       "Tech Enthusiast"
     ],
-    downloadCV: "Download CV"
+    downloadCV: "Download CV",
+    cvSize: "(PDF, 2.5MB)",
+    altImage: "Seba Salamah graduation photo"
   },
   AR: {
     title: "نبذة عني",
@@ -41,53 +63,90 @@ const content = {
       "مبتكر رقمي",
       "شغوف بالتقنية"
     ],
-    downloadCV: "تحميل السيرة الذاتية"
+    downloadCV: "تحميل السيرة الذاتية",
+    cvSize: "(PDF, ٢.٥ ميجابايت)",
+    altImage: "صورة تخرج صبا سلامة"
   }
 };
 
-// Component definitions remain the same...
-const AnimatedTitle = ({ text, theme }) => {
+const AnimatedTitle = ({ text }) => {
+  const prefersReducedMotion = useReducedMotion();
+  const words = text.split(" ");
+
   return (
     <motion.h1
-      className="text-5xl md:text-7xl font-bold tracking-tight mb-6"
-      style={{ 
-        color: theme.text,
-        fontFamily: 'Montserrat, sans-serif',
-        letterSpacing: '-0.05em'
+      className="text-5xl md:text-7xl font-bold tracking-tight mb-6 text-text-primary"
+      initial="hidden"
+      animate="visible"
+      variants={{
+        hidden: { opacity: 0 },
+        visible: { 
+          opacity: 1,
+          transition: prefersReducedMotion ? {} : { staggerChildren: 0.1 }
+        }
       }}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
     >
-      {text}
+      {words.map((word, index) => (
+        <motion.span
+          key={index}
+          className="inline-block mr-2"
+          variants={{
+            hidden: prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 20 },
+            visible: { 
+              opacity: 1, 
+              y: 0,
+              transition: prefersReducedMotion 
+                ? { duration: 0.3 }
+                : { 
+                    type: 'spring',
+                    stiffness: 120,
+                    damping: 12
+                  }
+            }
+          }}
+        >
+          {word}
+        </motion.span>
+      ))}
     </motion.h1>
   );
 };
 
-const RotatingFacts = ({ facts, theme }) => {
+const RotatingFacts = ({ facts }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const prefersReducedMotion = useReducedMotion();
+
+  const bind = useGesture({
+    onSwipedLeft: () => {
+      setCurrentIndex(prev => (prev + 1) % facts.length);
+    },
+    onSwipedRight: () => {
+      setCurrentIndex(prev => (prev - 1 + facts.length) % facts.length);
+    }
+  });
 
   useEffect(() => {
+    if (prefersReducedMotion) return;
+    
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % facts.length);
     }, 3000);
     return () => clearInterval(timer);
-  }, [facts.length]);
+  }, [facts.length, prefersReducedMotion]);
 
   return (
-    <div className="h-16 relative overflow-hidden my-6">
+    <div {...bind()} className="h-16 relative overflow-hidden my-6 touch-pan-x">
       <AnimatePresence mode="wait">
         <motion.div
           key={currentIndex}
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: -20, opacity: 0 }}
-          transition={{ duration: 0.5 }}
-          className="absolute w-full text-center text-3xl md:text-4xl font-bold"
-          style={{ 
-            color: theme.secondary,
-            fontFamily: 'Poppins, sans-serif'
+          initial={{ y: 20, opacity: 0, scale: 0.95 }}
+          animate={{ y: 0, opacity: 1, scale: 1 }}
+          exit={{ y: -20, opacity: 0, scale: 0.95 }}
+          transition={{ 
+            duration: prefersReducedMotion ? 0 : 0.5, 
+            ease: [0.4, 0, 0.2, 1] 
           }}
+          className="absolute w-full text-center text-3xl md:text-4xl font-bold text-secondary"
         >
           {facts[currentIndex]}
         </motion.div>
@@ -96,144 +155,216 @@ const RotatingFacts = ({ facts, theme }) => {
   );
 };
 
-const CVButton = ({ onClick, text, theme }) => {
+const CVButton = ({ onClick, text, ariaLabel, isDark }) => {
   return (
     <motion.button
       onClick={onClick}
-      className="relative inline-flex items-center justify-center px-6 py-3 rounded-full font-semibold text-white overflow-hidden group"
-      style={{
-        background: `linear-gradient(90deg, ${theme.primary} 0%, ${theme.secondary} 100%)`,
-        boxShadow: `0 4px 10px ${theme.shadowColor}`,
+      className="relative inline-flex items-center justify-center px-8 py-4 rounded-full font-semibold overflow-hidden group mobile-tap-target"
+      whileHover={{ 
+        scale: 1.05,
+        transition: { type: 'spring', stiffness: 300 }
       }}
-      whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      aria-label={ariaLabel}
+      style={{ willChange: 'transform' }}
     >
       <motion.div
-        className="absolute inset-0 w-full h-full transition-all duration-300"
-        style={{
-          background: `linear-gradient(90deg, ${theme.secondary} 0%, ${theme.primary} 100%)`,
-          opacity: 0
+        className="absolute inset-0"
+        animate={{
+          background: [
+            `linear-gradient(45deg, ${isDark ? '#58BCFB' : '#3A8679'}, ${isDark ? '#FD5B78' : '#E07A5F'})`,
+            `linear-gradient(135deg, ${isDark ? '#58BCFB' : '#3A8679'}, ${isDark ? '#FD5B78' : '#E07A5F'})`
+          ]
         }}
-        whileHover={{ opacity: 1 }}
+        transition={{
+          duration: 6,
+          repeat: Infinity,
+          repeatType: 'reverse'
+        }}
       />
-      <motion.span className="relative flex items-center gap-2">
+      
+      <motion.span 
+        className="relative flex items-center gap-3 z-10 text-white"
+        whileHover={{ scale: 1.05 }}
+      >
         <FiDownload className="w-5 h-5" />
-        {text}
+        <span>{text}</span>
       </motion.span>
     </motion.button>
   );
 };
 
+const AnimatedCard = ({ children }) => (
+  <motion.div
+    className="p-6 md:p-8 rounded-2xl bg-background-card border border-border shadow-xl hover:shadow-2xl transition-all"
+    whileHover={{ y: -5 }}
+    transition={{ type: 'spring', stiffness: 200 }}
+    style={{ willChange: 'transform' }}
+  >
+    {children}
+  </motion.div>
+);
+
 export default function About() {
-  const { theme, language } = useTheme();
+  const { language, isDark } = useTheme();
   const currentContent = content[language];
   const isRTL = language === 'AR';
+  const { scrollY } = useScroll();
+  const opacity = useTransform(scrollY, [0, 200], [1, 0.8], { clamp: false });
 
   const handleDownloadCV = () => {
-    window.open('/path-to-your-cv.pdf', '_blank');
+    try {
+      window.open('/cv-seba-salamah.pdf', '_blank');
+    } catch (error) {
+      console.error('Failed to download CV:', error);
+      alert(language === 'EN' 
+        ? 'Failed to download CV. Please try again later.' 
+        : 'تعذر تنزيل السيرة الذاتية. يرجى المحاولة لاحقًا.'
+      );
+    }
   };
 
   return (
     <section 
       id="about" 
       className="relative min-h-screen"
-      style={{
-        background: `linear-gradient(${theme.bg.replace('from-', '').replace('via-', '').replace('to-', '')})`,
-      }}
       dir={isRTL ? 'rtl' : 'ltr'}
     >
-      {/* Content Container */}
-      <div className="relative z-10 pt-20 pb-16">
-        <div className="max-w-6xl mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-16"
-          >
-            <AnimatedTitle text={currentContent.title} theme={theme} />
-            <motion.p 
-              className="text-xl max-w-2xl mx-auto font-light"
-              style={{ 
-                color: theme.textSecondary,
-                fontFamily: 'Open Sans, sans-serif'
-              }}
-            >
-              {currentContent.subtitle}
-            </motion.p>
-            <RotatingFacts facts={currentContent.funFacts} theme={theme} />
-          </motion.div>
+      <motion.div 
+        className="fixed inset-0 z-0 bg-gradient-to-b from-background via-background-card/90 to-background"
+        style={{ 
+          opacity,
+          backgroundImage: `url('/noise.png'), linear-gradient(to bottom, var(--color-background), var(--color-background-card) 90%, var(--color-background))`,
+          backgroundBlendMode: 'multiply'
+        }}
+      />
 
-          <div className="grid md:grid-cols-12 gap-12 items-center">
+      <div className="relative z-10 pt-20 pb-16">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={language}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.4, ease: 'easeInOut' }}
+              className="text-center mb-16"
+            >
+              <AnimatedTitle text={currentContent.title} />
+              
+              <motion.p 
+                className="text-xl md:text-2xl max-w-3xl mx-auto font-light text-text-secondary mt-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+              >
+                {currentContent.subtitle}
+              </motion.p>
+              
+              <RotatingFacts facts={currentContent.funFacts} />
+            </motion.div>
+          </AnimatePresence>
+
+          <div className="grid md:grid-cols-12 gap-8 lg:gap-12 items-start">
             <motion.div 
               className="md:col-span-7 space-y-8"
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+              transition={{ 
+                duration: 0.8, 
+                delay: 0.2,
+                ease: [0.4, 0, 0.2, 1]
+              }}
             >
-              <motion.div 
-                className="p-8 rounded-2xl"
-                style={{ 
-                  backgroundColor: theme.cardBg,
-                  border: `1px solid ${theme.borderColor}`,
-                  boxShadow: `0 4px 6px ${theme.shadowColor}`
-                }}
-                whileHover={{ scale: 1.02 }}
-              >
-                <p 
-                  className="text-lg leading-relaxed"
-                  style={{ 
-                    color: theme.text,
-                    fontFamily: 'Open Sans, sans-serif'
-                  }}
-                >
-                  {currentContent.bio}
-                </p>
-              </motion.div>
-
-              <div className="space-y-6">
+              <AnimatedCard>
                 <motion.div
-                  className="p-6 rounded-xl"
-                  style={{ 
-                    backgroundColor: theme.cardBg,
-                    border: `1px solid ${theme.borderColor}`,
-                    boxShadow: `0 4px 6px ${theme.shadowColor}`
-                  }}
-                  whileHover={{ scale: 1.02 }}
+                  className="text-lg md:text-xl leading-relaxed text-text-primary"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ staggerChildren: 0.1 }}
                 >
-                  <div className="space-y-2">
-                    <h3 
-                      className="text-2xl font-bold"
-                      style={{ 
-                        color: theme.primary,
-                        fontFamily: 'Montserrat, sans-serif'
+                  {currentContent.bio.split('. ').map((sentence, index) => (
+                    <motion.span
+                      key={index}
+                      className="block mb-4 last:mb-0"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ 
+                        duration: 0.4,
+                        ease: 'easeOut'
                       }}
                     >
-                      {currentContent.education.university}
-                    </h3>
-                    <p 
-                      className="text-lg"
-                      style={{ 
-                        color: theme.text,
-                        fontFamily: 'Open Sans, sans-serif'
-                      }}
+                      {sentence}.
+                    </motion.span>
+                  ))}
+                </motion.div>
+              </AnimatedCard>
+
+              <div className="space-y-8">
+                <AnimatedCard>
+                  <div className="space-y-4">
+                    <motion.div 
+                      className="flex items-center gap-4 mb-6 cursor-pointer"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      onClick={() => window.open('https://www.kau.edu.sa', '_blank')}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                     >
-                      {currentContent.education.degree}
-                    </p>
-                    <p 
-                      className="font-medium"
-                      style={{ color: theme.secondary }}
+                      <motion.div 
+                        className="p-3 rounded-full bg-primary/10 text-primary mobile-tap-target"
+                        whileHover={{ rotate: 360 }}
+                        transition={{ duration: 0.8 }}
+                      >
+                        <FaUniversity className="w-8 h-8" />
+                      </motion.div>
+                      <h3 className="text-2xl md:text-3xl font-bold text-primary hover:underline">
+                        {currentContent.education.university}
+                      </h3>
+                    </motion.div>
+                    
+                    <motion.div 
+                      className="flex items-center gap-4"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.2 }}
+                    >
+                      <motion.div 
+                        className="p-3 rounded-full bg-secondary/10 text-secondary mobile-tap-target"
+                        whileHover={{ scale: 1.1 }}
+                      >
+                        <FaGraduationCap className="w-6 h-6" />
+                      </motion.div>
+                      <p className="text-lg md:text-xl text-text-primary">
+                        {currentContent.education.degree}
+                      </p>
+                    </motion.div>
+                    
+                    <motion.p 
+                      className="font-medium text-secondary mt-4"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.4 }}
                     >
                       {currentContent.education.year}
-                    </p>
+                    </motion.p>
                   </div>
-                </motion.div>
+                </AnimatedCard>
 
-                <CVButton 
-                  onClick={handleDownloadCV}
-                  text={currentContent.downloadCV}
-                  theme={theme}
-                />
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.6 }}
+                >
+                  <CVButton 
+                    onClick={handleDownloadCV}
+                    text={currentContent.downloadCV}
+                    ariaLabel={`${currentContent.downloadCV} ${currentContent.cvSize}`}
+                    isDark={isDark}
+                  />
+                </motion.div>
               </div>
             </motion.div>
 
@@ -241,30 +372,42 @@ export default function About() {
               className="md:col-span-5 relative"
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
+              transition={{ 
+                duration: 0.8, 
+                delay: 0.4,
+                ease: [0.4, 0, 0.2, 1]
+              }}
             >
               <motion.div
-                className="relative aspect-square rounded-full overflow-hidden"
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.3 }}
-                style={{
-                  border: `4px solid ${theme.borderColor}`,
-                  boxShadow: `0 8px 16px ${theme.shadowColor}`
+                className="relative aspect-square rounded-[2rem] overflow-hidden border-4 border-border shadow-2xl hover:shadow-3xl transition-all"
+                whileHover={{ 
+                  scale: 1.02,
+                  rotate: 1,
+                  transition: { type: 'spring', stiffness: 200 }
                 }}
+                animate={{
+                  y: [0, 15, -15, 0]
+                }}
+                transition={{
+                  duration: 8,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+                style={{ willChange: 'transform' }}
               >
                 <Image
                   src="/images/graduate.png"
-                  alt="Developer Profile"
+                  alt={currentContent.altImage}
                   fill
                   className="object-cover"
                   priority
+                  fetchPriority="high"
+                  quality={100}
+                  placeholder="blur"
+                  blurDataURL="/images/graduate-blur.jpg"
+                  sizes="(max-width: 768px) 90vw, 50vw"
                 />
-                <div 
-                  className="absolute inset-0"
-                  style={{ 
-                    background: `radial-gradient(circle at 30% 30%, transparent 0%, ${theme.shadowColor} 100%)`
-                  }}
-                />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/30" />
               </motion.div>
             </motion.div>
           </div>

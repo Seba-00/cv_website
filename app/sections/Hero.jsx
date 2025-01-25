@@ -1,14 +1,63 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useDeferredValue } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
-import { FiSun, FiMoon } from 'react-icons/fi';
+import { FiSun, FiMoon, FiX, FiMenu } from 'react-icons/fi';
 import { IoLanguage } from 'react-icons/io5';
+import { useGesture } from '@use-gesture/react';
 import { useTheme } from '../context/ThemeContext';
 import { AnimatedBackground } from '../components/AnimatedBackground';
+import Particles from '@tsparticles/react';
+import { loadFull } from 'tsparticles';
 import Link from 'next/link';
 
+// Loading Spinner Component
+const LoadingSpinner = () => (
+  <motion.div
+    initial={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    transition={{ duration: 0.5 }}
+    className="fixed inset-0 z-50 bg-background flex items-center justify-center"
+  >
+    <div className="relative w-24 h-24">
+      <motion.div
+        className="absolute w-full h-full border-4 border-primary/10 rounded-full"
+        animate={{ rotate: 360 }}
+        transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+      />
+      <motion.div
+        className="absolute w-full h-full border-4 border-t-transparent border-primary rounded-full"
+        animate={{ rotate: 360 }}
+        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+      />
+    </div>
+  </motion.div>
+);
+
+// Throttle function for scroll events
+const throttle = (func, limit) => {
+  let lastFunc;
+  let lastRan;
+  return function() {
+    const context = this;
+    const args = arguments;
+    if (!lastRan) {
+      func.apply(context, args);
+      lastRan = Date.now();
+    } else {
+      clearTimeout(lastFunc);
+      lastFunc = setTimeout(function() {
+        if ((Date.now() - lastRan) >= limit) {
+          func.apply(context, args);
+          lastRan = Date.now();
+        }
+      }, limit - (Date.now() - lastRan));
+    }
+  };
+};
+
+// Content and translations
 const content = {
   EN: {
     greeting: "Hello, I'm",
@@ -44,42 +93,75 @@ const content = {
   },
 };
 
-const NavItem = ({ title, active, onClick, theme }) => (
-  <motion.button
-    onClick={onClick}
+// NavItem component
+const NavItem = ({ title, active, onClick, href, isRTL }) => (
+  <motion.div
     className="relative px-4 py-2 group font-medium"
     whileHover={{ scale: 1.05 }}
     whileTap={{ scale: 0.95 }}
   >
-    <motion.span
-      className="relative z-10 transition-colors duration-300"
-      style={{ color: active ? theme.primary : theme.textSecondary }}
-    >
-      {title}
-    </motion.span>
-    {active && (
+    {href ? (
+      <Link
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`relative z-10 transition-colors duration-300 ${
+          active ? 'text-primary font-semibold' : 'text-text-secondary hover:text-primary'
+        }`}
+        aria-current={active ? 'page' : undefined}
+      >
+        {title}
+      </Link>
+    ) : (
+      <button
+        onClick={onClick}
+        className={`relative z-10 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50 ${
+          active ? 'text-primary font-semibold' : 'text-text-secondary hover:text-primary'
+        }`}
+        aria-current={active ? 'page' : undefined}
+      >
+        {title}
+      </button>
+    )}
+    {active && !href && (
       <motion.div
         layoutId="navIndicator"
-        className="absolute inset-0 rounded-md"
-        style={{ backgroundColor: `${theme.primary}20` }}
+        className="absolute bottom-0 left-1/2 w-4/5 h-1 -translate-x-1/2 rounded-full bg-primary"
         transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
       />
     )}
-  </motion.button>
+  </motion.div>
 );
 
-// Main Hero component
-export default function Hero() {
-  const { isDark, toggleTheme, theme, language, toggleLanguage } = useTheme();
+const Hero = () => {
+  const { isDark, toggleTheme, language, toggleLanguage } = useTheme();
   const { scrollY } = useScroll();
   const [activeSection, setActiveSection] = useState('home');
   const currentContent = content[language];
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
+  const deferredRoleIndex = useDeferredValue(currentRoleIndex);
   const heroRef = useRef(null);
+  const menuRef = useRef(null);
+  const isRTL = language === 'AR';
+  const [isLoading, setIsLoading] = useState(true);
 
-  const navItems = Object.entries(currentContent.nav).map(([id, title]) => ({ id, title }));
+  // Loading effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
 
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Language and accessibility setup
+  useEffect(() => {
+    document.documentElement.lang = language === 'EN' ? 'en' : 'ar';
+    document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
+  }, [language, isRTL]);
+
+  // Role rotation effect
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentRoleIndex((prev) => (prev + 1) % currentContent.roles.length);
@@ -87,6 +169,7 @@ export default function Hero() {
     return () => clearInterval(interval);
   }, [currentContent.roles.length]);
 
+  // Scroll handler with throttling
   useEffect(() => {
     const handleScroll = () => {
       const sections = ['home', 'about', 'skills', 'projects', 'contact'];
@@ -104,126 +187,159 @@ export default function Hero() {
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const throttledScroll = throttle(handleScroll, 100);
+    window.addEventListener('scroll', throttledScroll);
+    return () => window.removeEventListener('scroll', throttledScroll);
   }, []);
 
+  // Swipe to close menu
+  useGesture(
+    {
+      onDrag: ({ direction: [_, dy] }) => {
+        if (dy > 3) setIsMenuOpen(false);
+      }
+    },
+    { target: menuRef, drag: { axis: 'y' } }
+  );
+
+  // Theme toggle without confetti
+  const handleThemeToggle = () => {
+    toggleTheme();
+  };
+
+  // Scroll to section
   const scrollTo = (id) => {
     const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      const yOffset = -80;
+      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
       setActiveSection(id);
       setIsMenuOpen(false);
     }
   };
 
+  // Particles initialization
+  const particlesInit = async (engine) => await loadFull(engine);
+
   const navOpacity = useTransform(scrollY, [0, 100], [0.8, 1]);
-  const navBlur = useTransform(scrollY, [0, 100], ['blur(0px)', 'blur(10px)']);
 
   return (
     <div id="home" ref={heroRef} className="relative min-h-screen overflow-hidden">
-      <AnimatedBackground theme={theme} scrollMultiplier={1} />
+      <AnimatedBackground />
 
-      {/* Navigation Bar */}
-      <motion.nav
-        className="fixed top-0 left-0 right-0 z-50"
-        style={{
-          backgroundColor: theme.navBg,
-          opacity: navOpacity,
-          backdropFilter: navBlur,
-          borderBottom: `1px solid ${theme.borderColor}`,
+      {/* Loading Screen */}
+      <AnimatePresence>
+        {isLoading && <LoadingSpinner />}
+      </AnimatePresence>
+
+      {/* Animated Particles */}
+      <Particles
+        id="hero-particles"
+        init={particlesInit}
+        options={{
+          particles: {
+            number: { value: 30 },
+            color: { value: isDark ? '#58BCFB' : '#3A8679' },
+            opacity: { value: 0.5 },
+            size: { value: 1 },
+            move: { enable: true, speed: 1.5, direction: 'bottom', straight: false }
+          }
         }}
+        className="absolute inset-0 z-0"
+      />
+
+      {/* Navigation */}
+      <motion.nav
+        className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/20"
+        style={{ opacity: navOpacity }}
       >
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-6">
-              <motion.span
-                className="text-2xl font-bold cursor-pointer"
-                style={{ color: theme.primary, fontFamily: 'Pacifico, cursive' }}
-                onClick={() => scrollTo('home')}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Seba
-              </motion.span>
-              <div className="hidden md:flex space-x-2">
-                {navItems.map(item => (
-                  <NavItem
-                    key={item.id}
-                    title={item.id === 'resume' ? item.title : item.title}
-                    active={activeSection === item.id}
-                    onClick={item.id !== 'resume' ? () => scrollTo(item.id) : null}
-                    theme={theme}
-                  />
-                ))}
-              </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-20">
+            <motion.div
+              className="flex items-center space-x-4 cursor-pointer"
+              whileHover={{ scale: 1.05 }}
+              onClick={() => scrollTo('home')}
+            >
+              <span className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                {currentContent.name}
+              </span>
+              <span className="hidden sm:block text-sm font-medium px-3 py-1 rounded-full bg-primary/10 text-primary">
+                {currentContent.graduateStatus}
+              </span>
+            </motion.div>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-6">
+              {Object.entries(currentContent.nav).map(([id, title]) => (
+                <NavItem
+                  key={id}
+                  title={title}
+                  active={activeSection === id}
+                  onClick={() => id !== 'resume' && scrollTo(id)}
+                  href={id === 'resume' ? '/cv-seba-salamah.pdf' : undefined}
+                  isRTL={isRTL}
+                />
+              ))}
             </div>
 
-            {/* Mobile Menu Toggle */}
-            <div className="md:hidden">
-              <motion.button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="p-2 rounded-lg"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <div className="w-6 h-0.5 mb-1.5" style={{ backgroundColor: theme.primary }} />
-                <div className="w-6 h-0.5 mb-1.5" style={{ backgroundColor: theme.primary }} />
-                <div className="w-6 h-0.5" style={{ backgroundColor: theme.primary }} />
-              </motion.button>
-            </div>
-
-            {/* Social Media and Theme Toggle */}
+            {/* Right Section */}
             <div className="flex items-center gap-4">
-              <motion.a
-                href="https://github.com/Seba-00"
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.1, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                className="p-2 rounded-lg transition-colors duration-200"
-                style={{ color: theme.primary }}
-              >
-                <FaGithub className="w-5 h-5" />
-              </motion.a>
+              <div className="flex items-center gap-3">
+                <motion.a
+                  href="https://github.com/Seba-00"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ y: -2 }}
+                  className="p-2 rounded-lg text-text-secondary hover:text-primary dark:hover:text-secondary"
+                >
+                  <FaGithub className="w-5 h-5" />
+                </motion.a>
 
-              <motion.a
-                href="https://www.linkedin.com/in/seba-salamah-7916742b8/"
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.1, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                className="p-2 rounded-lg transition-colors duration-200"
-                style={{ color: theme.primary }}
-              >
-                <FaLinkedin className="w-5 h-5" />
-              </motion.a>
+                <motion.a
+                  href="https://www.linkedin.com/in/seba-salamah-7916742b8/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ y: -2 }}
+                  className="p-2 rounded-lg text-text-secondary hover:text-primary dark:hover:text-secondary"
+                >
+                  <FaLinkedin className="w-5 h-5" />
+                </motion.a>
+              </div>
 
-              <motion.button
-                onClick={toggleLanguage}
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg"
-                style={{
-                  background: `${theme.primary}15`,
-                  color: theme.primary,
-                }}
-              >
-                <IoLanguage className="w-4 h-4" />
-                <span className="text-sm font-medium">
-                  {language === 'EN' ? 'عربي' : 'English'}
-                </span>
-              </motion.button>
+              <div className="h-6 w-px bg-border/20" />
 
-              <motion.button
-                onClick={toggleTheme}
-                whileHover={{ scale: 1.1, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                className="p-2 rounded-lg"
-                style={{ color: theme.primary }}
+              <div className="flex items-center gap-3">
+                <motion.button
+                  onClick={toggleLanguage}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-text-secondary hover:text-primary dark:hover:text-secondary"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <IoLanguage className="w-5 h-5" />
+                  <span className="text-sm font-medium">
+                    {language === 'EN' ? 'عربي' : 'English'}
+                  </span>
+                </motion.button>
+
+                <motion.button
+                  onClick={handleThemeToggle}
+                  className="p-2 rounded-lg text-text-secondary hover:text-primary dark:hover:text-secondary"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  {isDark ? (
+                    <FiSun className="w-5 h-5" />
+                  ) : (
+                    <FiMoon className="w-5 h-5" />
+                  )}
+                </motion.button>
+              </div>
+
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="md:hidden p-2 rounded-lg text-text-secondary"
               >
-                {isDark ? <FiSun className="w-5 h-5" /> : <FiMoon className="w-5 h-5" />}
-              </motion.button>
+                {isMenuOpen ? <FiX className="w-6 h-6" /> : <FiMenu className="w-6 h-6" />}
+              </button>
             </div>
           </div>
         </div>
@@ -232,48 +348,72 @@ export default function Hero() {
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div
-              className="md:hidden absolute w-full"
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-              style={{ backgroundColor: theme.navBg }}
+              ref={menuRef}
+              className="md:hidden fixed inset-0 z-50 bg-background-card"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
             >
-              <div className="px-6 py-4 space-y-2">
-                {navItems.map(item => (
-                  <Link key={item.id} href={item.id === 'resume' ? '/resume' : '#'}>
-                    <motion.button
-                      onClick={item.id !== 'resume' ? () => scrollTo(item.id) : null}
-                      className="w-full text-left px-4 py-2 rounded-lg font-medium"
-                      whileHover={{ x: 8 }}
-                      style={{
-                        backgroundColor: activeSection === item.id ? `${theme.primary}15` : 'transparent',
-                        color: activeSection === item.id ? theme.primary : theme.textSecondary,
-                      }}
-                    >
-                      {item.title}
-                    </motion.button>
-                  </Link>
-                ))}
+              <div className="flex flex-col h-full p-6">
+                <div className="flex justify-end mb-8">
+                  <button
+                    onClick={() => setIsMenuOpen(false)}
+                    className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                  >
+                    <FiX className="w-6 h-6" />
+                  </button>
+                </div>
+                
+                <div className="space-y-4 flex-1">
+                  {Object.entries(currentContent.nav).map(([id, title]) => (
+                    id === 'resume' ? (
+                      <Link
+                        key={id}
+                        href="/cv-seba-salamah.pdf"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`w-full text-left p-4 rounded-xl text-lg ${
+                          activeSection === id
+                            ? 'bg-primary/10 text-primary'
+                            : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                        }`}
+                      >
+                        {title}
+                      </Link>
+                    ) : (
+                      <button
+                        key={id}
+                        onClick={() => scrollTo(id)}
+                        className={`w-full text-left p-4 rounded-xl text-lg focus:outline-none focus:ring-2 focus:ring-primary/50 ${
+                          activeSection === id
+                            ? 'bg-primary/10 text-primary'
+                            : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                        }`}
+                      >
+                        {title}
+                      </button>
+                    )
+                  ))}
+                </div>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </motion.nav>
 
-      {/* Hero Section */}
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen text-center px-6">
+      {/* Hero Content */}
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen text-center px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="space-y-6"
+          className="max-w-4xl space-y-8"
         >
           <motion.div
+            className="font-mono text-lg md:text-xl text-primary"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="font-mono text-lg"
-            style={{ color: theme.primary }}
           >
             {currentContent.greeting}
           </motion.div>
@@ -281,64 +421,76 @@ export default function Hero() {
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-5xl md:text-7xl font-bold tracking-tight"
-            style={{
-              color: theme.text,
-              fontFamily: 'Montserrat, sans-serif',
-              letterSpacing: '-0.05em',
-            }}
+            className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight"
           >
-            {currentContent.name}
+            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              {currentContent.name}
+            </span>
           </motion.h1>
 
-          <motion.div
-            key={currentRoleIndex}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="h-16 text-3xl md:text-4xl font-bold"
-            style={{ color: theme.secondary, fontFamily: 'Poppins, sans-serif' }}
-          >
-            {currentContent.roles[currentRoleIndex]}
-          </motion.div>
+          <div className="h-20 flex items-center justify-center">
+            <AnimatePresence mode='wait'>
+              <motion.div
+                key={deferredRoleIndex}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="text-2xl md:text-3xl font-medium text-text-secondary"
+                transition={{ duration: 0.3 }}
+              >
+                {currentContent.roles[deferredRoleIndex]}
+              </motion.div>
+            </AnimatePresence>
+          </div>
 
           <motion.p
+            className="text-lg md:text-xl text-text-secondary max-w-2xl mx-auto leading-relaxed"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-xl max-w-2xl mx-auto font-light"
-            style={{ color: theme.textSecondary, fontFamily: 'Open Sans, sans-serif' }}
           >
             {currentContent.subtitle}
           </motion.p>
 
-          <motion.p
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-xl font-semibold"
-            style={{ color: theme.textSecondary, fontFamily: 'Open Sans, sans-serif' }}
+            transition={{ delay: 0.2 }}
           >
-            {currentContent.graduateStatus}
-          </motion.p>
-
-          {/* Improved Project Button */}
-          <motion.button
-            onClick={() => scrollTo('projects')}
-            className="relative inline-flex items-center justify-center px-6 py-3 rounded-full font-semibold text-white transition-all duration-300 ease-in-out transform hover:scale-105"
-            style={{
-              background: `linear-gradient(90deg, ${theme.primary} 0%, ${theme.secondary} 100%)`,
-              boxShadow: `0 4px 10px rgba(0, 0, 0, 0.3)`,
-            }}
-            whileHover={{
-              background: `linear-gradient(90deg, ${theme.secondary} 0%, ${theme.primary} 100%)`,
-              scale: 1.05,
-            }}
-            whileTap={{ scale: 0.95 }}
-            aria-label="View my projects"
-          >
-            <motion.span>{currentContent.projectButton}</motion.span>
-          </motion.button>
+            <motion.button
+  onClick={() => scrollTo('projects')}
+  className="relative inline-flex items-center justify-center px-8 py-4 rounded-full font-semibold text-white bg-gradient-to-r from-primary to-secondary btn-gradient-animate"  whileHover={{ scale: 1.05 }}
+  whileTap={{ scale: 0.95 }}
+>
+  <motion.div
+    className="absolute inset-0"
+    initial={{
+      background: `linear-gradient(90deg, var(--color-primary), var(--color-secondary))`
+    }}
+    animate={{
+      background: [
+        `linear-gradient(90deg, var(--color-primary), var(--color-secondary))`,
+        `linear-gradient(90deg, var(--color-secondary), var(--color-primary))`
+      ]
+    }}
+    transition={{
+      duration: 0.5,
+      repeat: Infinity,
+      repeatType: 'mirror'
+    }}
+    whileHover={{
+      background: `linear-gradient(90deg, var(--color-secondary), var(--color-primary))`,
+      transition: { duration: 0.3 }
+    }}
+  />
+  
+  <span className="relative z-10">{currentContent.projectButton}</span>
+</motion.button>
+              
+          </motion.div>
         </motion.div>
       </div>
     </div>
   );
-}
+};
+
+export default Hero;

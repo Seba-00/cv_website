@@ -79,108 +79,124 @@ const content = {
   }
 };
 
-const ProjectCard = ({ project, theme, isRTL }) => (
-  <motion.div
-    className="backdrop-blur-sm bg-opacity-50 rounded-lg shadow-lg overflow-hidden"
-    style={{ 
-      backgroundColor: `${theme.primary}05`,
-      border: `1px solid ${theme.primary}20`,
-    }}
-    whileHover={{ 
-      y: -5, 
-      backgroundColor: theme.cardBg,
-      boxShadow: `0 25px 50px -12px ${theme.primary}30` 
-    }}
-    transition={{ duration: 0.3 }}
-  >
-    <div className="relative h-48">
-      <Image
-        src={project.image}
-        alt={project.title}
-        layout="fill"
-        objectFit="cover"
-      />
-    </div>
-    <div className="p-6">
-      <h3 className="text-xl font-semibold mb-2" style={{ color: theme.primary }}>{project.title}</h3>
-      <p className="text-sm mb-4" style={{ color: theme.textSecondary }}>{project.description}</p>
-      <div className="flex flex-wrap mb-4">
-        {project.tags.map((tag, index) => (
-          <span 
-            key={index}
-            className="text-xs mr-2 mb-2 px-2 py-1 rounded-full"
-            style={{ 
-              backgroundColor: `${theme.primary}20`,
-              color: theme.primary
-            }}
-          >
-            {tag}
-          </span>
-        ))}
+const ProjectCard = ({ project, isRTL }) => {
+  const cardRef = useRef(null);
+
+  useEffect(() => {
+    gsap.from(cardRef.current, {
+      scrollTrigger: {
+        trigger: cardRef.current,
+        start: "top 90%",
+        toggleActions: "play none none reverse"
+      },
+      opacity: 0,
+      y: 50,
+      duration: 0.8
+    });
+  }, []);
+
+  return (
+    <motion.div
+      ref={cardRef}
+      className="relative backdrop-blur-sm bg-background-card/30 border border-border rounded-xl shadow-2xl hover:shadow-primary/20 overflow-hidden group"
+      whileHover={{ 
+        y: -8,
+        transition: { type: 'spring', stiffness: 300 }
+      }}
+    >
+      <div className="relative h-48 overflow-hidden">
+        <Image
+          src={project.image}
+          alt={project.title}
+          fill
+          className="object-cover transform transition-transform duration-500 group-hover:scale-105"
+          placeholder="blur"
+          blurDataURL="/images/blur-pattern.png"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/80" />
       </div>
-      <div className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} items-center justify-between`}>
-        <div className={`flex ${isRTL ? 'space-x-reverse' : ''} space-x-4`}>
-          <motion.a 
-            href={project.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.1, y: -2 }}
-            whileTap={{ scale: 0.95 }}
-            style={{ color: theme.primary }}
-          >
-            <FaGithub size={20} />
-          </motion.a>
-          <motion.a 
-            href={project.live}
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.1, y: -2 }}
-            whileTap={{ scale: 0.95 }}
-            style={{ color: theme.primary }}
-          >
-            <FaExternalLinkAlt size={20} />
-          </motion.a>
+      
+      <div className="p-6 space-y-4">
+        <div className="flex items-start justify-between gap-4">
+          <h3 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            {project.title}
+          </h3>
+          <div className="flex gap-3">
+            <motion.a 
+              href={project.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-text-secondary hover:text-primary"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <FaGithub size={20} />
+            </motion.a>
+            <motion.a 
+              href={project.live}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-text-secondary hover:text-primary"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <FaExternalLinkAlt size={20} />
+            </motion.a>
+          </div>
         </div>
-        <Link href={project.detailsLink}>
-          <motion.button
-            className="flex items-center space-x-2 px-4 py-2 rounded-lg"
-            style={{ 
-              backgroundColor: `${theme.primary}15`,
-              color: theme.primary
-            }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+
+        <p className="text-sm text-text-secondary leading-relaxed">
+          {project.description}
+        </p>
+
+        <div className="flex flex-wrap gap-2">
+          {project.tags.map((tag, index) => (
+            <motion.span
+              key={index}
+              className="px-3 py-1 text-xs font-medium rounded-full bg-primary/10 text-primary"
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: index * 0.1 }}
+            >
+              {tag}
+            </motion.span>
+          ))}
+        </div>
+
+        <Link href={project.detailsLink} className="block">
+          <motion.div
+            className="flex items-center gap-2 w-fit ml-auto px-4 py-2 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary transition-colors"
+            whileHover={{ x: isRTL ? -5 : 5 }}
           >
-            <FaInfoCircle size={16} />
             <span>{content[isRTL ? 'AR' : 'EN'].viewDetails}</span>
-          </motion.button>
+            <FaInfoCircle size={16} />
+          </motion.div>
         </Link>
       </div>
-    </div>
-  </motion.div>
-);
+    </motion.div>
+  );
+};
 
 export default function Projects() {
-  const { theme, language } = useTheme();
+  const { language } = useTheme();
   const currentContent = content[language];
   const isRTL = language === 'AR';
-  
   const sectionRef = useRef(null);
-  const projectsRef = useRef(null);
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
     
     const ctx = gsap.context(() => {
-      gsap.from(projectsRef.current.children, {
-        y: 50,
+      gsap.from(".project-card", {
+        y: 80,
         opacity: 0,
         duration: 0.8,
-        stagger: 0.2,
+        stagger: 0.15,
+        ease: "power3.out",
         scrollTrigger: {
-          trigger: projectsRef.current,
-          start: "top 80%",
-          end: "bottom 20%",
+          trigger: sectionRef.current,
+          start: "top center",
+          end: "bottom top",
           toggleActions: "play none none reverse"
         }
       });
@@ -193,28 +209,28 @@ export default function Projects() {
     <section 
       id="projects" 
       ref={sectionRef}
-      className="relative min-h-screen py-20 overflow-hidden"
+      className="relative min-h-screen py-24 overflow-hidden"
       dir={isRTL ? 'rtl' : 'ltr'}
     >
-      <AnimatedBackground theme={theme} scrollMultiplier={0.7} />
+      <AnimatedBackground intensity={0.3} />
 
-      <div className="max-w-6xl mx-auto px-6 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.h2 
-          className="text-4xl md:text-5xl font-bold mb-12 text-center"
-          style={{ color: theme.text }}
+          className="text-4xl md:text-5xl font-bold mb-16 text-center"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          {currentContent.title}
+          <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            {currentContent.title}
+          </span>
         </motion.h2>
 
-        <div ref={projectsRef} className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 project-grid">
           {currentContent.projects.map((project, index) => (
             <ProjectCard 
               key={index} 
               project={project} 
-              theme={theme} 
               isRTL={isRTL} 
             />
           ))}

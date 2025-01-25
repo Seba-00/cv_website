@@ -1,18 +1,5 @@
 'use client';
 
-/**
- * Contact Page Component
- * A fully responsive contact page with form submission and social links
- * Features:
- * - Form submission using FormSubmit
- * - Bilingual support (English/Arabic)
- * - Theme support
- * - Social media links
- * - Toast notifications
- * - Loading states
- * - Animations
- */
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
@@ -20,11 +7,10 @@ import { FaGithub, FaLinkedin, FaEnvelope, FaWhatsapp } from 'react-icons/fa';
 import { AnimatedBackground } from '../components/AnimatedBackground';
 import toast, { Toaster } from 'react-hot-toast';
 
-// Content configuration for multilingual support
 const content = {
   EN: {
     title: "FIND ME ON",
-    subtitle: "Feel free to connect with me  ",
+    subtitle: "Feel free to connect with me",
     formLabels: {
       name: "Your Name",
       email: "Your Email",
@@ -37,7 +23,7 @@ const content = {
     }
   },
   AR: {
-    title: "لا تتردد في التواصل معي ",
+    title: "لا تتردد في التواصل معي",
     subtitle: "تواصل معي",
     formLabels: {
       name: "اسمك",
@@ -52,11 +38,7 @@ const content = {
   }
 };
 
-/**
- * Animated Title Component
- * Renders a title with word-by-word animation
- */
-const AnimatedTitle = ({ text, theme }) => {
+const AnimatedTitle = ({ text }) => {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -84,11 +66,10 @@ const AnimatedTitle = ({ text, theme }) => {
 
   return (
     <motion.h1
-      className="text-4xl md:text-6xl font-bold mb-4 relative z-10"
+      className="text-4xl md:text-6xl font-bold mb-4 relative z-10 text-text-primary"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      style={{ color: theme.text }}
     >
       {words.map((word, index) => (
         <motion.span
@@ -103,13 +84,9 @@ const AnimatedTitle = ({ text, theme }) => {
   );
 };
 
-/**
- * Input Field Component
- * Reusable component for form inputs and textareas
- */
-const InputField = ({ label, id, type = "text", theme, rows, name }) => (
+const InputField = ({ label, id, type = "text", rows, name }) => (
   <div className="mb-4">
-    <label htmlFor={id} className="block text-sm font-medium mb-2" style={{ color: theme.text }}>
+    <label htmlFor={id} className="block text-sm font-medium mb-2 text-text-primary">
       {label}
     </label>
     {rows ? (
@@ -117,12 +94,7 @@ const InputField = ({ label, id, type = "text", theme, rows, name }) => (
         id={id}
         name={name || id}
         rows={rows}
-        className="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 transition-all duration-300"
-        style={{
-          backgroundColor: `${theme.primary}15`,
-          color: theme.text,
-          borderColor: theme.primary,
-        }}
+        className="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 transition-all duration-300 bg-primary/15 text-text-primary border border-primary/30"
         required
       />
     ) : (
@@ -130,33 +102,22 @@ const InputField = ({ label, id, type = "text", theme, rows, name }) => (
         type={type}
         id={id}
         name={name || id}
-        className="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 transition-all duration-300"
-        style={{
-          backgroundColor: `${theme.primary}15`,
-          color: theme.text,
-          borderColor: theme.primary,
-        }}
+        className="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 transition-all duration-300 bg-primary/15 text-text-primary border border-primary/30"
         required
       />
     )}
   </div>
 );
 
-/**
- * Contact Form Component
- * Handles form submission using FormSubmit service
- */
-const ContactForm = ({ theme, content, isLoading, setIsLoading }) => {
+const ContactForm = ({ content, isLoading, setIsLoading }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Create a new form element for submission
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = 'https://formsubmit.co/sebasalamah00@gmail.com';
 
-    // Add form data
     const formData = new FormData(e.target);
     for (let [key, value] of formData.entries()) {
       const input = document.createElement('input');
@@ -166,7 +127,6 @@ const ContactForm = ({ theme, content, isLoading, setIsLoading }) => {
       form.appendChild(input);
     }
 
-    // Add FormSubmit configuration
     const configs = {
       _captcha: 'false',
       _template: 'table',
@@ -174,7 +134,6 @@ const ContactForm = ({ theme, content, isLoading, setIsLoading }) => {
       _subject: 'New Contact Form Message'
     };
 
-    // Add configuration fields
     for (let [key, value] of Object.entries(configs)) {
       const input = document.createElement('input');
       input.type = 'hidden';
@@ -183,11 +142,9 @@ const ContactForm = ({ theme, content, isLoading, setIsLoading }) => {
       form.appendChild(input);
     }
 
-    // Submit form and show success message
     document.body.appendChild(form);
     toast.success(content.toasts.success);
     
-    // Delay submission to show toast
     setTimeout(() => {
       form.submit();
       document.body.removeChild(form);
@@ -202,27 +159,23 @@ const ContactForm = ({ theme, content, isLoading, setIsLoading }) => {
         label={content.formLabels.name}
         id="name"
         name="name"
-        theme={theme}
       />
       <InputField
         label={content.formLabels.email}
         id="email"
         name="email"
         type="email"
-        theme={theme}
       />
       <InputField
         label={content.formLabels.message}
         id="message"
         name="message"
-        theme={theme}
         rows={5}
       />
       <motion.button
         type="submit"
         disabled={isLoading}
-        className="w-full py-3 rounded-lg font-bold text-white transition-all duration-300"
-        style={{ backgroundColor: theme.primary }}
+        className="w-full py-3 rounded-lg font-bold text-white bg-primary transition-all duration-300"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
@@ -243,17 +196,12 @@ const ContactForm = ({ theme, content, isLoading, setIsLoading }) => {
   );
 };
 
-/**
- * Main Contact Page Component
- * Combines all components and handles page layout
- */
 export default function Contact() {
-  const { theme, language } = useTheme();
+  const { language } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const currentContent = content[language];
   const isRTL = language === 'AR';
 
-  // Social media links configuration
   const socialLinks = [
     { icon: FaGithub, href: "https://github.com/Seba-00", label: "GitHub" },
     { icon: FaLinkedin, href: "https://www.linkedin.com/in/seba-salamah-7916742b8/", label: "LinkedIn" },
@@ -262,56 +210,46 @@ export default function Contact() {
   ];
 
   return (
-    <section id="contact" className={`min-h-screen relative overflow-hidden py-20 ${isRTL ? 'rtl' : 'ltr'}`}>
-      {/* Toast notifications */}
+    <section id="contact" className={`min-h-screen relative overflow-hidden py-20 bg-background ${isRTL ? 'rtl' : 'ltr'}`}>
       <Toaster
         position="top-center"
         toastOptions={{
           duration: 3000,
-          style: {
-            background: theme.cardBg,
-            color: theme.text,
-            border: `1px solid ${theme.primary}`,
-          },
+          className: 'bg-background-card text-text-primary border border-primary',
           success: {
             iconTheme: {
-              primary: theme.primary,
-              secondary: 'white',
+              primary: 'rgb(var(--color-primary))',
+              secondary: 'rgb(var(--color-background))',
             },
           },
         }}
       />
       
-      <AnimatedBackground theme={theme} />
+      <AnimatedBackground />
       
       <div className="container mx-auto px-4 relative z-10">
-        {/* Header Section */}
         <div className="text-center mb-16">
-          <AnimatedTitle text={currentContent.title} theme={theme} />
+          <AnimatedTitle text={currentContent.title} />
           <motion.p 
-            className="text-xl"
+            className="text-xl text-text-secondary"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            style={{ color: theme.textSecondary }}
           >
             {currentContent.subtitle}
           </motion.p>
         </div>
 
-        {/* Main Content Grid */}
         <div className="max-w-4xl mx-auto">
           <div className="grid md:grid-cols-2 gap-8">
-            {/* Social Links Section */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <div className="bg-white/10 backdrop-blur-md rounded-lg shadow-xl p-6" 
-                   style={{ backgroundColor: theme.cardBg }}>
-                <h3 className="text-2xl font-bold mb-4" style={{ color: theme.primary }}>
-                  Let's Connect
+              <div className="bg-background-card backdrop-blur-md rounded-lg shadow-xl p-6">
+                <h3 className="text-2xl font-bold mb-4 text-primary">
+                  {language === 'EN' ? "Let's Connect" : "تواصل معنا"}
                 </h3>
                 <div className="space-y-4">
                   {socialLinks.map((link, index) => (
@@ -326,11 +264,10 @@ export default function Contact() {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.1 }}
                     >
-                      <span className="w-10 h-10 rounded-full flex items-center justify-center transition-colors duration-300"
-                            style={{ backgroundColor: `${theme.primary}20` }}>
-                        <link.icon className="w-5 h-5" style={{ color: theme.primary }} />
+                      <span className="w-10 h-10 rounded-full flex items-center justify-center transition-colors duration-300 bg-primary/20">
+                        <link.icon className="w-5 h-5 text-primary" />
                       </span>
-                      <span className="text-lg transition-colors duration-300" style={{ color: theme.text }}>
+                      <span className="text-lg transition-colors duration-300 text-text-primary">
                         {link.label}
                       </span>
                     </motion.a>
@@ -339,19 +276,16 @@ export default function Contact() {
               </div>
             </motion.div>
             
-            {/* Contact Form Section */}
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <div className="bg-white/10 backdrop-blur-md rounded-lg shadow-xl p-6" 
-                   style={{ backgroundColor: theme.cardBg }}>
-                <h3 className="text-2xl font-bold mb-4" style={{ color: theme.primary }}>
-                  Send a Message
+              <div className="bg-background-card backdrop-blur-md rounded-lg shadow-xl p-6">
+                <h3 className="text-2xl font-bold mb-4 text-primary">
+                  {language === 'EN' ? "Send a Message" : "أرسل رسالة"}
                 </h3>
                 <ContactForm
-                  theme={theme}
                   content={currentContent}
                   isLoading={isLoading}
                   setIsLoading={setIsLoading}

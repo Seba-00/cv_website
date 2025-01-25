@@ -1,98 +1,135 @@
-/* app/globals.css */
+/* app/styles/globals.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --transition-duration: 300ms;
-  --gradient-light: linear-gradient(to bottom, #f8f9fa, #ffffff);
-  --gradient-dark: linear-gradient(to bottom, #1a1a1a, #2d2d2d);
+@layer base {
+  :root {
+    /* ==== New Light Theme - Earthy Elegance ==== */
+    --color-primary: 58 134 121;       /* 3A8679 - Muted Teal (from 4th palette) */
+    --color-secondary: 150 103 201;     /* E07A5F - Terracotta (from 4th palette) */
+    --color-background: 214 209 197  ;   /* F4F1DE - Soft Vanilla (from 4th palette) */
+    --color-foreground: 61 64 91;      /* 3D405B - Deep Navy (text color) */
+    --color-muted: 129 178 154;        /* 81B29A - Sage Green (from 4th palette) */
+    --color-border: 210 203 184;       /* D2CBB8 - Warm Gray */
+    
+    /* Gradient */
+    --gradient-highlight: linear-gradient(135deg, #3A8679 0%, #E07A5F 100%);
+  }
+
+  .dark {
+    /* ==== Dark Theme - Cosmic Harmony ==== */
+    --color-primary: 88 188 251;       /* 58BCFB - Electric Blue */
+    --color-secondary: 253 91 120;     /* FD5B78 - Vibrant Coral */
+    --color-background: 15 17 25;      /* 0F1119 - Space Black */
+    --color-foreground: 240 240 250;   /* F0F0FA - Moonlight White */
+    --color-muted: 130 130 145;        /* 828291 - Cosmic Dust */
+    --color-border: 50 55 65;          /* 323741 - Asteroid Gray */
+
+    /* Gradient */
+    --gradient-highlight: linear-gradient(135deg, #58BCFB 0%, #FD5B78 100%);
+  }
+
+  body {
+    @apply bg-background text-foreground transition-colors duration-300;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  /* Typography Enhancements */
+  h1, h2, h3 {
+    @apply font-bold tracking-tight;
+  }
+
+  h1 { @apply text-4xl md:text-6xl; }
+  h2 { @apply text-3xl md:text-4xl; }
+  h3 { @apply text-xl md:text-2xl; }
+
+  /* Enhanced Components */
+  .btn-primary {
+    @apply px-6 py-3 rounded-lg font-medium transition-all;
+    background: var(--gradient-highlight);
+    color: white;
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px -3px rgb(var(--color-primary)/0.3);
+    }
+  }
+
+  .card {
+    @apply p-6 rounded-2xl border border-border;
+    background: linear-gradient(
+      145deg,
+      rgb(var(--color-background)) 0%,
+      rgb(var(--color-background)/0.98) 100%
+    );
+    box-shadow: 0 4px 24px -6px rgb(0 0 0 / 0.05);
+  }
+
+  .nav-link {
+    @apply px-4 py-2 rounded-md hover:bg-primary/10 transition-colors;
+  }
+  @layer components {
+    .dark .bg-gradient-to-r {
+      --tw-gradient-from: rgb(var(--color-primary)/0.9);
+      --tw-gradient-to: rgb(var(--color-secondary)/0.9);
+    }
+  }
+
+
+  @layer components {
+    .project-grid {
+      perspective: 1000px;
+    }
+    
+    .project-card {
+      transform-style: preserve-3d;
+      will-change: transform, opacity;
+    }
   
-  /* Light theme default colors */
-  --color-primary: #4caf50;
-  --color-secondary: #8fbc8f;
-  --color-accent: #ffca28;
-  --color-text: #6c757d;
-  --color-text-secondary: #adb5bd;
-  --color-bg: #f8f9fa;
-  --color-nav-bg: rgba(255, 255, 255, 0.9);
-  --color-card-bg: rgba(255, 255, 255, 0.95);
-  --color-border: rgba(144, 238, 144, 0.2);
-  --color-shadow: rgba(0, 0, 0, 0.1);
-}
-
-/* Dark theme colors */
-.dark {
-  --color-primary: #17a2b8;
-  --color-secondary: #28a745;
-  --color-accent: #ffc107;
-  --color-text: #f8f9fa;
-  --color-text-secondary: #adb5bd;
-  --color-bg: #1a1a1a;
-  --color-nav-bg: rgba(33, 37, 41, 0.9);
-  --color-card-bg: rgba(52, 58, 64, 0.95);
-  --color-border: rgba(23, 162, 184, 0.2);
-  --color-shadow: rgba(255, 255, 255, 0.1);
   
-  @apply bg-gray-900;
-  color-scheme: dark;
+  }
+
+  /* Gradient Text */
+  .gradient-text {
+    background: var(--gradient-highlight);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
 }
 
-/* Light mode styles */
-:root:not(.dark) {
-  @apply bg-white;
-  color-scheme: light;
+@keyframes playful-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
 }
 
-/* Base transitions */
-body {
-  transition: 
-    background-color var(--transition-duration) ease,
-    color var(--transition-duration) ease;
-  background-color: var(--color-bg);
-  color: var(--color-text);
+.logo {
+  animation: playful-bounce 3s ease-in-out infinite;
 }
 
-/* Smooth transitions for theme changes */
 * {
-  transition-property: background-color, border-color, color, fill, stroke;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: var(--transition-duration);
+  transition: background-color 0.3s, color 0.2s, border-color 0.3s;
 }
 
-/* Utility classes for theme colors */
-@layer utilities {
-  .text-theme-primary {
-    color: var(--color-primary);
-  }
-  
-  .text-theme-secondary {
-    color: var(--color-secondary);
-  }
-  
-  .text-theme-accent {
-    color: var(--color-accent);
-  }
-  
-  .bg-theme-primary {
-    background-color: var(--color-primary);
-  }
-  
-  .bg-theme-secondary {
-    background-color: var(--color-secondary);
-  }
-  
-  .bg-theme-card {
-    background-color: var(--color-card-bg);
-  }
-  
-  .border-theme {
-    border-color: var(--color-border);
-  }
+/* Light theme */
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--color-primary));
 }
 
-/* Section transitions */
-.section-transition {
-  @apply py-20 px-6;
-  transition: all var(--transition-duration) ease;
+/* Dark theme */
+.dark ::-webkit-scrollbar-thumb {
+  background: rgb(var(--color-secondary));
+
+
+}
+
+
+.btn-gradient-animate {
+  background-size: 200% 200%;
+  background-position: 100% 50%;
+  transition: background-position 0.5s ease;
+}
+
+.btn-gradient-animate:hover {
+  background-position: 0% 50%;
 }

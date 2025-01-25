@@ -1,33 +1,26 @@
 // tailwind.config.mjs
-/** @type {import('tailwindcss').Config} */
-export default {
+import colors from 'tailwindcss/colors'
+
+// tailwind.config.js
+module.exports = {
   content: [
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}'
   ],
   theme: {
     extend: {
       colors: {
-        primary: {
-          light: '#4caf50',
-          dark: '#17a2b8',
-        },
-        secondary: {
-          light: '#8fbc8f',
-          dark: '#28a745',
-        },
-        accent: {
-          light: '#ffca28',
-          dark: '#ffc107',
-        },
-      },
-      backgroundImage: {
-        'gradient-light': 'linear-gradient(to bottom, #f8f9fa, #ffffff)',
-        'gradient-dark': 'linear-gradient(to bottom, #1a1a1a, #2d2d2d)',
+        primary: 'rgb(var(--color-primary) / <alpha-value>)',
+        secondary: 'rgb(var(--color-secondary) / <alpha-value>)',
+        background: 'rgb(var(--color-background) / <alpha-value>)',
+        foreground: 'rgb(var(--color-foreground) / <alpha-value>)',
+        muted: 'rgb(var(--color-muted) / <alpha-value>)',
+        border: 'rgb(var(--color-border) / <alpha-value>)'
       },
     },
   },
+ 
+
   plugins: [],
   darkMode: 'class',
-};
+}
