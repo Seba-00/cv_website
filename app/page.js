@@ -1,30 +1,22 @@
-'use client'
-import { useScrollAnimation } from './hooks/useScrollAnimation'
-
-import Hero from './sections/Hero'
-import About from './sections/About'
-import Skills from './sections/Skills'
-import Projects from './sections/Projects'
-import Contact from './sections/Contact'
+'use client';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { AnimatedBackground, ScrollToTop } from './components';
+import { Hero, About, Skills, Projects, Contact } from './sections';
 
 export default function Home() {
-  useScrollAnimation()
-  
+  useScrollAnimation();
+
   return (
     <main className="relative">
+      <AnimatedBackground />
+      
       <Hero />
-      <div className="section-transition">
-        <About />
-      </div>
-      <div className="section-transition">
-        <Skills />
-      </div>
-      <div className="section-transition">
-        <Projects />
-      </div>
-      <div className="section-transition">
-        <Contact />
-      </div>
+      <About className="animate-on-scroll" />
+      <Skills className="animate-on-scroll" />
+      <Projects className="animate-on-scroll" />
+      <Contact className="animate-on-scroll" />
+
+      <ScrollToTop />
     </main>
-  )
+  );
 }

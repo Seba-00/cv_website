@@ -7,24 +7,21 @@ import { FiSun, FiMoon } from 'react-icons/fi';
 import { IoLanguage } from 'react-icons/io5';
 import { useTheme } from '../context/ThemeContext';
 import { AnimatedBackground } from '../components/AnimatedBackground';
+import Link from 'next/link';
 
 const content = {
   EN: {
     greeting: "Hello, I'm",
     name: 'Seba',
     subtitle: 'Crafting digital experiences with code ✨',
-    roles: [
-      'Full Stack Developer',
-      'UI/UX Enthusiast',
-      'Problem Solver',
-      'Tech Explorer',
-    ],
+    roles: ['Full Stack Developer', 'UI/UX Enthusiast', 'Problem Solver', 'Tech Explorer'],
     nav: {
       home: 'Home',
       about: 'About',
       skills: 'Skills',
       projects: 'Projects',
       contact: 'Contact',
+      resume: 'Resume',
     },
     projectButton: 'See My Projects',
     graduateStatus: 'Computer Science Graduate',
@@ -33,18 +30,14 @@ const content = {
     greeting: 'مرحباً، أنا',
     name: 'صبا',
     subtitle: 'أصنع تجارب رقمية بالكود ✨',
-    roles: [
-      'مطور ويب شامل',
-      'مصمم واجهات',
-      'حلال مشاكل',
-      'مستكشف تقني',
-    ],
+    roles: ['مطور ويب شامل', 'مصمم واجهات', 'حلال مشاكل', 'مستكشف تقني'],
     nav: {
       home: 'الرئيسية',
       about: 'نبذة عني',
       skills: 'المهارات',
       projects: 'المشاريع',
       contact: 'اتصل بي',
+      resume: 'السيرة الذاتية',
     },
     projectButton: 'شاهد مشاريعي',
     graduateStatus: 'خريج علوم الحاسوب',
@@ -54,15 +47,13 @@ const content = {
 const NavItem = ({ title, active, onClick, theme }) => (
   <motion.button
     onClick={onClick}
-    className="relative px-4 py-2 group"
+    className="relative px-4 py-2 group font-medium"
     whileHover={{ scale: 1.05 }}
     whileTap={{ scale: 0.95 }}
   >
     <motion.span
-      className="relative z-10 text-lg transition-colors duration-300"
-      style={{
-        color: active ? theme.primary : theme.textSecondary,
-      }}
+      className="relative z-10 transition-colors duration-300"
+      style={{ color: active ? theme.primary : theme.textSecondary }}
     >
       {title}
     </motion.span>
@@ -77,6 +68,7 @@ const NavItem = ({ title, active, onClick, theme }) => (
   </motion.button>
 );
 
+// Main Hero component
 export default function Hero() {
   const { isDark, toggleTheme, theme, language, toggleLanguage } = useTheme();
   const { scrollY } = useScroll();
@@ -86,16 +78,12 @@ export default function Hero() {
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
   const heroRef = useRef(null);
 
-  const navItems = Object.entries(currentContent.nav).map(([id, title]) => ({
-    id,
-    title,
-  }));
+  const navItems = Object.entries(currentContent.nav).map(([id, title]) => ({ id, title }));
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentRoleIndex((prev) => (prev + 1) % currentContent.roles.length);
     }, 3000);
-
     return () => clearInterval(interval);
   }, [currentContent.roles.length]);
 
@@ -130,13 +118,13 @@ export default function Hero() {
   };
 
   const navOpacity = useTransform(scrollY, [0, 100], [0.8, 1]);
-
   const navBlur = useTransform(scrollY, [0, 100], ['blur(0px)', 'blur(10px)']);
 
   return (
     <div id="home" ref={heroRef} className="relative min-h-screen overflow-hidden">
       <AnimatedBackground theme={theme} scrollMultiplier={1} />
 
+      {/* Navigation Bar */}
       <motion.nav
         className="fixed top-0 left-0 right-0 z-50"
         style={{
@@ -148,18 +136,30 @@ export default function Hero() {
       >
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex items-center justify-between h-16">
-            <div className="hidden md:flex space-x-2">
-              {navItems.map((item) => (
-                <NavItem
-                  key={item.id}
-                  title={item.title}
-                  active={activeSection === item.id}
-                  onClick={() => scrollTo(item.id)}
-                  theme={theme}
-                />
-              ))}
+            <div className="flex items-center space-x-6">
+              <motion.span
+                className="text-2xl font-bold cursor-pointer"
+                style={{ color: theme.primary, fontFamily: 'Pacifico, cursive' }}
+                onClick={() => scrollTo('home')}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Seba
+              </motion.span>
+              <div className="hidden md:flex space-x-2">
+                {navItems.map(item => (
+                  <NavItem
+                    key={item.id}
+                    title={item.id === 'resume' ? item.title : item.title}
+                    active={activeSection === item.id}
+                    onClick={item.id !== 'resume' ? () => scrollTo(item.id) : null}
+                    theme={theme}
+                  />
+                ))}
+              </div>
             </div>
 
+            {/* Mobile Menu Toggle */}
             <div className="md:hidden">
               <motion.button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -173,6 +173,7 @@ export default function Hero() {
               </motion.button>
             </div>
 
+            {/* Social Media and Theme Toggle */}
             <div className="flex items-center gap-4">
               <motion.a
                 href="https://github.com/Seba-00"
@@ -227,6 +228,7 @@ export default function Hero() {
           </div>
         </div>
 
+        {/* Mobile Menu */}
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div
@@ -234,25 +236,24 @@ export default function Hero() {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
               style={{ backgroundColor: theme.navBg }}
             >
               <div className="px-6 py-4 space-y-2">
-                {navItems.map((item) => (
-                  <motion.button
-                    key={item.id}
-                    onClick={() => scrollTo(item.id)}
-                    className="w-full text-left px-4 py-2 rounded-lg"
-                    whileHover={{ x: 8 }}
-                    style={{
-                      backgroundColor:
-                        activeSection === item.id ? `${theme.primary}15` : 'transparent',
-                      color:
-                        activeSection === item.id ? theme.primary : theme.textSecondary,
-                    }}
-                  >
-                    {item.title}
-                  </motion.button>
+                {navItems.map(item => (
+                  <Link key={item.id} href={item.id === 'resume' ? '/resume' : '#'}>
+                    <motion.button
+                      onClick={item.id !== 'resume' ? () => scrollTo(item.id) : null}
+                      className="w-full text-left px-4 py-2 rounded-lg font-medium"
+                      whileHover={{ x: 8 }}
+                      style={{
+                        backgroundColor: activeSection === item.id ? `${theme.primary}15` : 'transparent',
+                        color: activeSection === item.id ? theme.primary : theme.textSecondary,
+                      }}
+                    >
+                      {item.title}
+                    </motion.button>
+                  </Link>
                 ))}
               </div>
             </motion.div>
@@ -260,6 +261,7 @@ export default function Hero() {
         </AnimatePresence>
       </motion.nav>
 
+      {/* Hero Section */}
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen text-center px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -282,7 +284,8 @@ export default function Hero() {
             className="text-5xl md:text-7xl font-bold tracking-tight"
             style={{
               color: theme.text,
-              fontFamily: 'Montserrat, sans-serif', // Apply the font here
+              fontFamily: 'Montserrat, sans-serif',
+              letterSpacing: '-0.05em',
             }}
           >
             {currentContent.name}
@@ -294,7 +297,7 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             className="h-16 text-3xl md:text-4xl font-bold"
-            style={{ color: theme.secondary }}
+            style={{ color: theme.secondary, fontFamily: 'Poppins, sans-serif' }}
           >
             {currentContent.roles[currentRoleIndex]}
           </motion.div>
@@ -302,8 +305,8 @@ export default function Hero() {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-xl max-w-2xl mx-auto"
-            style={{ color: theme.textSecondary }}
+            className="text-xl max-w-2xl mx-auto font-light"
+            style={{ color: theme.textSecondary, fontFamily: 'Open Sans, sans-serif' }}
           >
             {currentContent.subtitle}
           </motion.p>
@@ -312,26 +315,27 @@ export default function Hero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="text-xl font-semibold"
-            style={{ color: theme.textSecondary }}
+            style={{ color: theme.textSecondary, fontFamily: 'Open Sans, sans-serif' }}
           >
             {currentContent.graduateStatus}
           </motion.p>
 
+          {/* Improved Project Button */}
           <motion.button
             onClick={() => scrollTo('projects')}
-            className="px-8 py-4 rounded-xl font-medium shadow-lg"
+            className="relative inline-flex items-center justify-center px-6 py-3 rounded-full font-semibold text-white transition-all duration-300 ease-in-out transform hover:scale-105"
             style={{
-              backgroundColor: theme.primary,
-              color: isDark ? theme.bg.split('-')[0].replace('from-', '') : theme.text,
-              boxShadow: `0 10px 15px -3px ${theme.shadowColor}`,
+              background: `linear-gradient(90deg, ${theme.primary} 0%, ${theme.secondary} 100%)`,
+              boxShadow: `0 4px 10px rgba(0, 0, 0, 0.3)`,
             }}
             whileHover={{
+              background: `linear-gradient(90deg, ${theme.secondary} 0%, ${theme.primary} 100%)`,
               scale: 1.05,
-              boxShadow: `0 20px 25px -5px ${theme.shadowColor}`,
             }}
             whileTap={{ scale: 0.95 }}
+            aria-label="View my projects"
           >
-            {currentContent.projectButton}
+            <motion.span>{currentContent.projectButton}</motion.span>
           </motion.button>
         </motion.div>
       </div>

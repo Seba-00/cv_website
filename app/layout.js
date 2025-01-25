@@ -1,16 +1,16 @@
 // app/layout.js
-
 import { ThemeProvider } from './context/ThemeContext';
-import './globals.css';
+import './styles/globals.css';
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
+      <head>
+        <meta name="color-scheme" content="light dark" />
+      </head>
+      <body className="transition-colors duration-300">
         <ThemeProvider>
-          <main className="transition-colors duration-300">
-            {children}
-          </main>
+          {children}
         </ThemeProvider>
       </body>
     </html>
