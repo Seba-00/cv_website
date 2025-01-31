@@ -1,5 +1,250 @@
 'use client';
 
+import React, { useRef } from 'react';
+import { motion, useInView } from 'framer-motion';
+import { useTheme } from '../context/ThemeContext';
+import { 
+  SiOpenjdk,
+  SiPython,
+  SiFirebase,
+  SiFlutter,
+  SiHtml5,
+  SiCss3,
+  SiFlask
+} from 'react-icons/si';
+import { AnimatedBackground } from '../components/AnimatedBackground';
+
+const content = {
+  EN: {
+    title: "Skills & Technologies",
+    categories: {
+      development: "Development",
+      frontend: "Frontend",
+      backend: "Backend",
+    },
+    skills: [
+      {
+        name: "Java",
+        icon: SiOpenjdk,
+        description: "Object-oriented programming & Android development",
+        category: "development"
+      },
+      {
+        name: "Python",
+        icon: SiPython,
+        description: "Backend development & automation",
+        category: "backend"
+      },
+      {
+        name: "Firebase",
+        icon: SiFirebase,
+        description: "Real-time database & authentication",
+        category: "backend"
+      },
+      {
+        name: "Flutter",
+        icon: SiFlutter,
+        description: "Cross-platform mobile development",
+        category: "development"
+      },
+      {
+        name: "HTML",
+        icon: SiHtml5,
+        description: "Semantic markup & structure",
+        category: "frontend"
+      },
+      {
+        name: "CSS",
+        icon: SiCss3,
+        description: "Styling & responsive design",
+        category: "frontend"
+      },
+      {
+        name: "Flask",
+        icon: SiFlask,
+        description: "Python web framework",
+        category: "backend"
+      }
+    ]
+  },
+  AR: {
+    title: "المهارات والتقنيات",
+    categories: {
+      development: "التطوير",
+      frontend: "الواجهة الأمامية",
+      backend: "الواجهة الخلفية",
+    },
+    skills: [
+      {
+        name: "Java",
+        icon: SiOpenjdk,
+        description: "البرمجة كائنية التوجه وتطوير أندرويد",
+        category: "development"
+      },
+      {
+        name: "Python",
+        icon: SiPython,
+        description: "تطوير الخلفية والأتمتة",
+        category: "backend"
+      },
+      {
+        name: "Firebase",
+        icon: SiFirebase,
+        description: "قاعدة بيانات في الوقت الفعلي والمصادقة",
+        category: "backend"
+      },
+      {
+        name: "Flutter",
+        icon: SiFlutter,
+        description: "تطوير تطبيقات الموبايل متعددة المنصات",
+        category: "development"
+      },
+      {
+        name: "HTML",
+        icon: SiHtml5,
+        description: "الترميز الدلالي والهيكلة",
+        category: "frontend"
+      },
+      {
+        name: "CSS",
+        icon: SiCss3,
+        description: "التصميم والتجاوب",
+        category: "frontend"
+      },
+      {
+        name: "Flask",
+        icon: SiFlask,
+        description: "إطار عمل ويب بايثون",
+        category: "backend"
+      }
+    ]
+  }
+};
+
+const SkillCard = ({ skill, index }) => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
+
+  return (
+    <motion.div
+      ref={ref}
+      variants={{
+        hidden: { opacity: 0, y: 30 },
+        visible: { opacity: 1, y: 0 }
+      }}
+      initial="hidden"
+      animate={isInView ? "visible" : "hidden"}
+      transition={{ duration: 0.4, delay: index * 0.1 }}
+      whileHover={{ y: -5 }}
+      className="group relative overflow-hidden rounded-xl bg-background-card border border-border/50 p-6 hover:border-primary/50 transition-colors"
+    >
+      <div className="flex items-center gap-4">
+        <div className="flex-shrink-0 p-3 rounded-lg bg-primary/10">
+          <skill.icon className="w-8 h-8 text-primary" />
+        </div>
+        <div>
+          <h3 className="text-xl font-semibold text-text-primary mb-1">
+            {skill.name}
+          </h3>
+          <p className="text-sm text-text-secondary">
+            {skill.description}
+          </p>
+        </div>
+      </div>
+      
+      <motion.div
+        className="absolute bottom-0 left-0 h-0.5 bg-primary"
+        initial={{ width: "0%" }}
+        whileHover={{ width: "100%" }}
+        transition={{ duration: 0.2 }}
+      />
+    </motion.div>
+  );
+};
+
+const FilterButton = ({ active, onClick, children }) => (
+  <motion.button
+    onClick={onClick}
+    whileHover={{ scale: 1.02 }}
+    whileTap={{ scale: 0.98 }}
+    className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all ${
+      active 
+        ? 'bg-primary text-white'
+        : 'bg-background-card text-text-secondary hover:text-primary'
+    }`}
+  >
+    {children}
+  </motion.button>
+);
+
+export default function Skills() {
+  const { language } = useTheme();
+  const currentContent = content[language];
+  const isRTL = language === 'AR';
+  const [activeCategory, setActiveCategory] = React.useState('all');
+  const titleRef = useRef(null);
+  const isInView = useInView(titleRef, { once: true });
+
+  const filteredSkills = activeCategory === 'all'
+    ? currentContent.skills
+    : currentContent.skills.filter(skill => skill.category === activeCategory);
+
+  return (
+    <section
+      id="skills"
+      className="relative min-h-screen py-20"
+      dir={isRTL ? 'rtl' : 'ltr'}
+    >
+      <AnimatedBackground />
+      
+      <div className="max-w-6xl mx-auto px-6 relative z-10">
+        <motion.div 
+          ref={titleRef}
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-12"
+        >
+          <h2 className="text-4xl font-bold text-text-primary mb-8">
+            {currentContent.title}
+          </h2>
+
+          <div className="flex flex-wrap justify-center gap-4 mb-12">
+            <FilterButton 
+              active={activeCategory === 'all'}
+              onClick={() => setActiveCategory('all')}
+            >
+              {language === 'EN' ? 'All' : 'الكل'}
+            </FilterButton>
+            {Object.entries(currentContent.categories).map(([key, value]) => (
+              <FilterButton
+                key={key}
+                active={activeCategory === key}
+                onClick={() => setActiveCategory(key)}
+              >
+                {value}
+              </FilterButton>
+            ))}
+          </div>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredSkills.map((skill, index) => (
+            <SkillCard 
+              key={skill.name} 
+              skill={skill} 
+              index={index} 
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+/*'use client';
+
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../../app/context/ThemeContext';
@@ -164,7 +409,7 @@ export default function Skills() {
           </motion.p>
         </div>
 
-        {/* Category Filters */}
+        {/* Category Filters }
         <motion.div 
           className="flex flex-wrap justify-center gap-4 mb-16"
           initial={{ opacity: 0 }}
@@ -193,7 +438,7 @@ export default function Skills() {
           })}
         </motion.div>
 
-        {/* Skills Grid */}
+        {/* Skills Grid }
         <motion.div 
           layout
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
@@ -211,4 +456,4 @@ export default function Skills() {
       </div>
     </section>
   );
-}
+}*/

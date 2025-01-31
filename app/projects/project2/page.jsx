@@ -2,17 +2,14 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../../context/ThemeContext';
 import { AnimatedBackground } from '../../components/AnimatedBackground';
-import { FaGithub, FaExternalLinkAlt, FaArrowLeft } from 'react-icons/fa';
+import { FaGithub, FaArrowLeft } from 'react-icons/fa';
 import { TbBrandNextjs, TbBrandMongodb } from 'react-icons/tb';
 import { SiExpress, SiTailwindcss } from 'react-icons/si';
 import { FaNode } from 'react-icons/fa';
 
-// =================
-// CONTENT CONFIGURATION
-// =================
 const content = {
   EN: {
     title: "Geovision Explorer",
@@ -49,15 +46,13 @@ const content = {
       "/images/geo8.JPG",
       "/images/geo9.JPG"
     ],
-    video: "SaEzj-ocdCo",
     links: {
       github: "https://github.com/yourusername/ecommerce-platform",
-      live: "https://ecommerce-platform-demo.com",
       back: "Back to Projects"
     }
   },
   AR: {
-    title: "  الرؤية الهندسية ",
+    title: "الرؤية الهندسية",
     description: "حل متكامل للتجارة الإلكترونية مع هيكلية حديثة وتجربة مستخدم سلسة.",
     overview: "توفر منصة التجارة الإلكترونية هذه حلاً شاملاً للبيع بالتجزئة عبر الإنترنت، مع إدارة المخزون في الوقت الفعلي، ومعالجة الدفع الآمن، ولوحة تحكم سهلة للمسؤول.",
     features: [
@@ -91,18 +86,13 @@ const content = {
       "/images/geo8.JPG",
       "/images/geo9.JPG"
     ],
-    video: "SaEzj-ocdCo",
     links: {
       github: "https://github.com/yourusername/ecommerce-platform",
-      live: "https://ecommerce-platform-demo.com",
       back: "العودة إلى المشاريع"
     }
   }
 };
 
-// =================
-// MAIN COMPONENT
-// =================
 export default function Project1() {
   const { language } = useTheme();
   const currentContent = content[language];
@@ -130,18 +120,17 @@ export default function Project1() {
     <div className="min-h-screen relative overflow-hidden">
       <AnimatedBackground />
       
-      {/* Main Content Container */}
       <motion.div 
-        className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20"
+        className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-20"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
         {/* Back Button */}
-        <motion.div variants={itemVariants}>
+        <motion.div variants={itemVariants} className="mb-6">
           <Link href="/#projects">
             <motion.div
-              className="inline-flex items-center gap-2 mb-8 px-4 py-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
               whileHover={{ x: isRTL ? 8 : -8 }}
             >
               <FaArrowLeft className={`${isRTL ? 'ml-2 rotate-180' : 'mr-2'}`} />
@@ -152,7 +141,7 @@ export default function Project1() {
 
         {/* Project Title */}
         <motion.h1
-          className="text-4xl md:text-5xl font-bold mb-4 gradient-text"
+          className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 gradient-text"
           variants={itemVariants}
         >
           {currentContent.title}
@@ -160,66 +149,65 @@ export default function Project1() {
 
         {/* Project Description */}
         <motion.p
-          className="text-xl mb-8 text-text-secondary"
+          className="text-lg sm:text-xl mb-6 sm:mb-8 text-text-secondary"
           variants={itemVariants}
         >
           {currentContent.description}
         </motion.p>
 
-        {/* Two Column Layout */}
-        <div className="grid md:grid-cols-2 gap-8 mb-12">
-          {/* Left Column - Project Info */}
-          <motion.div className="space-y-6" variants={itemVariants}>
-            {/* Overview Card */}
-            <div className="card">
-              <h2 className="text-2xl font-bold mb-4 text-primary">
-                {isRTL ? 'نظرة عامة' : 'Overview'}
-              </h2>
-              <p className="text-text-primary">{currentContent.overview}</p>
-            </div>
-
-            {/* Features Card */}
-            <div className="card">
-              <h2 className="text-2xl font-bold mb-4 text-primary">
-                {isRTL ? 'الميزات' : 'Features'}
-              </h2>
-              <ul className="space-y-2">
-                {currentContent.features.map((feature, index) => (
-                  <li 
-                    key={index} 
-                    className="flex items-center gap-2 text-text-primary"
-                  >
-                    <span className="w-2 h-2 rounded-full bg-primary" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-            </div>
+        {/* Flexible Layout */}
+        <div className="space-y-8">
+          {/* Overview Section */}
+          <motion.div className="card" variants={itemVariants}>
+            <h2 className="text-xl sm:text-2xl font-bold mb-4 text-primary">
+              {isRTL ? 'نظرة عامة' : 'Overview'}
+            </h2>
+            <p className="text-base sm:text-lg text-text-primary">
+              {currentContent.overview}
+            </p>
           </motion.div>
 
-          {/* Right Column - Images */}
-          <motion.div className="space-y-6" variants={itemVariants}>
+          {/* Features Section */}
+          <motion.div className="card" variants={itemVariants}>
+            <h2 className="text-xl sm:text-2xl font-bold mb-4 text-primary">
+              {isRTL ? 'الميزات' : 'Features'}
+            </h2>
+            <ul className="space-y-2">
+              {currentContent.features.map((feature, index) => (
+                <li 
+                  key={index} 
+                  className="flex items-center gap-2 text-base sm:text-lg text-text-primary"
+                >
+                  <span className="w-2 h-2 rounded-full bg-primary" />
+                  {feature}
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+
+          {/* Image Gallery */}
+          <motion.div variants={itemVariants}>
             {/* Main Image */}
             <motion.div 
-              className="relative aspect-video rounded-xl overflow-hidden border border-border"
+              className="relative w-full h-[400px] sm:h-[500px] md:h-[600px] rounded-xl overflow-hidden border border-border mb-4"
               whileHover={{ scale: 1.02 }}
             >
               <Image
                 src={currentContent.images[selectedImage]}
                 alt="Project Preview"
                 fill
-                className="object-cover"
+                className="object-contain"
                 priority
-                quality={100}
+                quality={90}
               />
             </motion.div>
 
             {/* Image Thumbnails */}
-            <div className="flex gap-4 overflow-x-auto pb-4">
+            <div className="flex gap-2 sm:gap-4 overflow-x-auto pb-2 sm:pb-4">
               {currentContent.images.map((image, index) => (
                 <motion.button
                   key={index}
-                  className={`relative w-20 h-20 rounded-lg overflow-hidden border-2 ${
+                  className={`relative w-16 sm:w-20 h-16 sm:h-20 rounded-lg overflow-hidden border-2 flex-shrink-0 ${
                     selectedImage === index ? 'border-primary' : 'border-border'
                   }`}
                   whileHover={{ scale: 1.05 }}
@@ -235,90 +223,66 @@ export default function Project1() {
               ))}
             </div>
           </motion.div>
-        </div>
 
-        {/* Technical Details Section */}
-        <motion.div className="card" variants={itemVariants}>
-          <h2 className="text-2xl font-bold mb-6 text-primary">
-            {currentContent.technical.title}
-          </h2>
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Tech Stack */}
-            <div>
-              <h3 className="text-xl font-semibold mb-4 text-text-primary">
-                {isRTL ? 'المكدس التقني' : 'Tech Stack'}
-              </h3>
-              <div className="flex flex-wrap gap-3">
-                {currentContent.technical.stack.map((tech, index) => (
-                  <motion.div
-                    key={index}
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/10 text-primary"
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    <tech.icon className="w-5 h-5" />
-                    <span>{tech.name}</span>
-                  </motion.div>
-                ))}
+          {/* Technical Details */}
+          <motion.div className="card" variants={itemVariants}>
+            <h2 className="text-xl sm:text-2xl font-bold mb-6 text-primary">
+              {currentContent.technical.title}
+            </h2>
+            <div className="space-y-6">
+              {/* Tech Stack */}
+              <div>
+                <h3 className="text-lg sm:text-xl font-semibold mb-4 text-text-primary">
+                  {isRTL ? 'المكدس التقني' : 'Tech Stack'}
+                </h3>
+                <div className="flex flex-wrap gap-2 sm:gap-3">
+                  {currentContent.technical.stack.map((tech, index) => (
+                    <motion.div
+                      key={index}
+                      className="flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-2 rounded-lg bg-primary/10 text-primary text-sm sm:text-base"
+                      whileHover={{ scale: 1.05 }}
+                    >
+                      <tech.icon className="w-4 h-4 sm:w-5 sm:h-5" />
+                      <span>{tech.name}</span>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Challenges & Solutions */}
+              <div>
+                <h3 className="text-lg sm:text-xl font-semibold mb-4 text-text-primary">
+                  {isRTL ? 'التحديات والحلول' : 'Challenges & Solutions'}
+                </h3>
+                <div className="space-y-4">
+                  <p className="text-sm sm:text-base text-text-secondary">
+                    {currentContent.technical.challenges}
+                  </p>
+                  <p className="text-sm sm:text-base text-text-secondary">
+                    {currentContent.technical.solutions}
+                  </p>
+                </div>
               </div>
             </div>
-
-            {/* Challenges & Solutions */}
-            <div>
-              <h3 className="text-xl font-semibold mb-4 text-text-primary">
-                {isRTL ? 'التحديات والحلول' : 'Challenges & Solutions'}
-              </h3>
-              <p className="mb-4 text-text-secondary">
-                {currentContent.technical.challenges}
-              </p>
-              <p className="text-text-secondary">
-                {currentContent.technical.solutions}
-              </p>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Video Demo Section */}
-        {currentContent.video && (
-          <motion.div className="card mt-8" variants={itemVariants}>
-            <h2 className="text-2xl font-bold mb-4 text-primary">
-              {isRTL ? 'عرض تجريبي' : 'Video Demo'}
-            </h2>
-            <div className="aspect-video rounded-lg overflow-hidden">
-              <iframe
-                src={`https://www.youtube.com/embed/${currentContent.video}`}
-                className="w-full h-full"
-                allowFullScreen
-              />
-            </div>
           </motion.div>
-        )}
 
-        {/* Footer Links */}
-        <motion.div 
-          className="flex flex-wrap justify-center gap-6 mt-12"
-          variants={itemVariants}
-        >
-          <motion.a
-            href={currentContent.links.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-primary"
-            whileHover={{ scale: 1.05 }}
+          {/* Footer Links */}
+          <motion.div 
+            className="flex flex-col sm:flex-row justify-center gap-4 mt-8"
+            variants={itemVariants}
           >
-            <FaGithub className="w-5 h-5" />
-            GitHub
-          </motion.a>
-          <motion.a
-            href={currentContent.links.live}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-primary bg-secondary hover:bg-secondary/90"
-            whileHover={{ scale: 1.05 }}
-          >
-            <FaExternalLinkAlt className="w-5 h-5" />
-            {isRTL ? 'عرض مباشر' : 'Live Demo'}
-          </motion.a>
-        </motion.div>
+            <motion.a
+              href={currentContent.links.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-primary flex items-center justify-center"
+              whileHover={{ scale: 1.05 }}
+            >
+              <FaGithub className="w-5 h-5 mr-2" />
+              GitHub
+            </motion.a>
+          </motion.div>
+        </div>
       </motion.div>
     </div>
   );

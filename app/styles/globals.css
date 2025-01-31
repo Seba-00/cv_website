@@ -5,35 +5,38 @@
 
 @layer base {
   :root {
-    /* ==== New Light Theme - Earthy Elegance ==== */
-    --color-primary: 58 134 121;       /* 3A8679 - Muted Teal (from 4th palette) */
-    --color-secondary: 150 103 201;     /* E07A5F - Terracotta (from 4th palette) */
-    --color-background: 214 209 197  ;   /* F4F1DE - Soft Vanilla (from 4th palette) */
-    --color-foreground: 61 64 91;      /* 3D405B - Deep Navy (text color) */
-    --color-muted: 129 178 154;        /* 81B29A - Sage Green (from 4th palette) */
-    --color-border: 210 203 184;       /* D2CBB8 - Warm Gray */
-    
-    /* Gradient */
-    --gradient-highlight: linear-gradient(135deg, #3A8679 0%, #E07A5F 100%);
+
+    /* Calm Blues Theme */
+--color-primary: 96 125 139;    /* Muted Blue #607D8B (Headline 1) */
+--color-secondary: 38 198 218;  /* Light Teal #26C6DA (Headline 2) */
+--color-background: 240 248 255; /* Light Blue #F0F8FF */
+--color-foreground: 50 50 50;   /* Charcoal Gray #323232 (Main Text) */
+--color-muted: 120 120 120;     /* Soft Gray #787878 (Subtle Text) */
+--color-border: 200 200 200;    /* Light Gray #C8C8C8 */
+--gradient-highlight: linear-gradient(135deg, #607D8B 0%, #26C6DA 100%);
+
+     
+
   }
 
   .dark {
-    /* ==== Dark Theme - Cosmic Harmony ==== */
-    --color-primary: 88 188 251;       /* 58BCFB - Electric Blue */
-    --color-secondary: 253 91 120;     /* FD5B78 - Vibrant Coral */
-    --color-background: 15 17 25;      /* 0F1119 - Space Black */
-    --color-foreground: 240 240 250;   /* F0F0FA - Moonlight White */
-    --color-muted: 130 130 145;        /* 828291 - Cosmic Dust */
-    --color-border: 50 55 65;          /* 323741 - Asteroid Gray */
-
-    /* Gradient */
-    --gradient-highlight: linear-gradient(135deg, #58BCFB 0%, #FD5B78 100%);
+    /* Dark Theme - Midnight Ocean */
+    --color-primary: 102 178 255;    /* Soft Blue #66B2FF */
+    --color-secondary: 255 110 127;  /* Coral Pink #FF6E7F */
+    --color-background: 22 28 45;    /* Deep Midnight #161C2D */
+    --color-foreground: 225 232 238; /* Pale Blue #E1E8EE */
+    --color-muted: 73 89 113;        /* Slate Blue #495971 */
+    --color-border: 45 55 72;        /* Dark Slate #2D3748 */
+    
+    /* Gradient with cool transition */
+    --gradient-highlight: linear-gradient(135deg, #66B2FF 0%, #FF6E7F 100%);
   }
 
   body {
     @apply bg-background text-foreground transition-colors duration-300;
     font-family: 'Inter', system-ui, sans-serif;
   }
+
 
   /* Typography Enhancements */
   h1, h2, h3 {
@@ -133,3 +136,14 @@
 .btn-gradient-animate:hover {
   background-position: 0% 50%;
 }
+
+
+
+
+
+
+
+
+
+
+

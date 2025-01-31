@@ -1,16 +1,145 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
+import { useTheme } from '../context/ThemeContext';
+import { FiDownload } from 'react-icons/fi';
+import { FaGraduationCap } from 'react-icons/fa';
+import { AnimatedBackground } from '../components/AnimatedBackground';
+import PageTransition from '../components/PageTransition';
+
+const RotatingText = ({ texts }) => {
+  const [index, setIndex] = useState(0);
+
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setIndex((prev) => (prev + 1) % texts.length);
+    }, 2000); // Faster rotation
+
+    return () => clearInterval(timer);
+  }, [texts.length]);
+
+  return (
+    <div className="h-12 relative overflow-hidden">
+      <motion.div
+        key={index}
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: -20, opacity: 0 }}
+        transition={{ duration: 0.2 }} // Faster transition
+        className="absolute w-full text-xl text-secondary font-medium"
+      >
+        {texts[index]}
+      </motion.div>
+    </div>
+  );
+};
+
+export default function About() {
+  const { language } = useTheme();
+  const currentContent = content[language];
+  const isRTL = language === 'AR';
+
+  return (
+    <PageTransition>
+      <section 
+        id="about" 
+        className="relative min-h-screen"
+        dir={isRTL ? 'rtl' : 'ltr'}
+      >
+        <AnimatedBackground />
+        
+        <div className="relative z-10 pt-32 pb-16 px-6">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3 }}
+                className="space-y-8"
+              >
+                <div>
+                  <h1 className="text-4xl font-bold text-text-primary mb-4">
+                    {currentContent.title}
+                  </h1>
+                  <RotatingText texts={currentContent.traits} />
+                </div>
+
+                <p className="text-lg text-text-secondary leading-relaxed">
+                  {currentContent.bio}
+                </p>
+
+                <motion.div 
+                  className="bg-background-card p-6 rounded-xl"
+                  whileHover={{ y: -5 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <div className="flex items-center gap-4 mb-4">
+                    <FaGraduationCap className="w-6 h-6 text-primary" />
+                    <div>
+                      <h3 className="font-semibold text-text-primary">
+                        {currentContent.education.degree}
+                      </h3>
+                      <p className="text-text-secondary">
+                        {currentContent.education.university}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="text-secondary">{currentContent.education.year}</p>
+                </motion.div>
+
+                <motion.button
+                  onClick={() => window.open('/cv-seba-salamah.pdf', '_blank')}
+                  className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <FiDownload className="w-5 h-5" />
+                  {currentContent.downloadCV}
+                </motion.button>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3 }}
+                className="relative aspect-square rounded-2xl overflow-hidden"
+              >
+                <Image
+                  src="/images/graduate.png"
+                  alt="Profile"
+                  fill
+                  className="object-cover"
+                  priority
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </PageTransition>
+  );
+}
+
+
+
+
+/*'use client';
+
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
-import { FiDownload } from 'react-icons/fi';
-import { FaGraduationCap, FaUniversity } from 'react-icons/fa';
+import { FiDownload, FiSun, FiMoon, FiX, FiMenu } from 'react-icons/fi';
+import { FaGithub, FaLinkedin, FaGraduationCap, FaUniversity } from 'react-icons/fa';
+import { IoLanguage } from 'react-icons/io5';
 import { useGesture } from '@use-gesture/react';
+import { AnimatedBackground } from '../components/AnimatedBackground';
+import Link from 'next/link';
 
-
-
-// Custom reduced motion hook
 const useReducedMotion = () => {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
@@ -27,6 +156,45 @@ const useReducedMotion = () => {
 
   return prefersReducedMotion;
 };
+
+const NavItem = React.memo(({ title, isActive, onClick, href, isRTL }) => (
+  <motion.div
+    className="relative px-3 py-1.5 group font-medium"
+    whileHover={{ scale: 1.03 }}
+    whileTap={{ scale: 0.97 }}
+  >
+    {href ? (
+      <Link
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`relative z-10 transition-colors duration-200 ${
+          isActive ? 'text-primary font-semibold' : 'text-text-secondary hover:text-primary'
+        } focus:outline-none focus:ring-2 focus:ring-primary/50`}
+        aria-label={`${title} (opens in new tab)`}
+      >
+        {title}
+      </Link>
+    ) : (
+      <button
+        onClick={onClick}
+        className={`relative z-10 transition-colors duration-200 ${
+          isActive ? 'text-primary font-semibold' : 'text-text-secondary hover:text-primary'
+        } focus:outline-none focus:ring-2 focus:ring-primary/50`}
+        aria-current={isActive ? 'page' : undefined}
+      >
+        {title}
+      </button>
+    )}
+    {isActive && !href && (
+      <motion.div
+        layoutId="navIndicator"
+        className="absolute bottom-0 left-1/2 w-4/5 h-1 -translate-x-1/2 rounded-full bg-primary"
+        transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
+      />
+    )}
+  </motion.div>
+));
 
 const content = {
   EN: {
@@ -46,7 +214,16 @@ const content = {
     ],
     downloadCV: "Download CV",
     cvSize: "(PDF, 2.5MB)",
-    altImage: "Seba Salamah graduation photo"
+    altImage: "Seba Salamah graduation photo",
+    nav: {
+      home: 'Home',
+      about: 'About',
+      skills: 'Skills',
+      projects: 'Projects',
+      contact: 'Contact',
+      resume: 'Resume',
+    },
+    graduateStatus: 'Computer Science Graduate',
   },
   AR: {
     title: "نبذة عني",
@@ -65,7 +242,16 @@ const content = {
     ],
     downloadCV: "تحميل السيرة الذاتية",
     cvSize: "(PDF, ٢.٥ ميجابايت)",
-    altImage: "صورة تخرج صبا سلامة"
+    altImage: "صورة تخرج صبا سلامة",
+    nav: {
+      home: 'الرئيسية',
+      about: 'نبذة عني',
+      skills: 'المهارات',
+      projects: 'المشاريع',
+      contact: 'اتصل بي',
+      resume: 'السيرة الذاتية',
+    },
+    graduateStatus: 'خريج علوم الحاسوب',
   }
 };
 
@@ -75,33 +261,35 @@ const AnimatedTitle = ({ text }) => {
 
   return (
     <motion.h1
-      className="text-5xl md:text-7xl font-bold tracking-tight mb-6 text-text-primary"
+      className="text-4xl md:text-6xl font-bold tracking-tight mb-4 text-text-primary"
       initial="hidden"
       animate="visible"
       variants={{
         hidden: { opacity: 0 },
         visible: { 
           opacity: 1,
-          transition: prefersReducedMotion ? {} : { staggerChildren: 0.1 }
+          transition: prefersReducedMotion ? {} : { staggerChildren: 0.08 }
         }
       }}
+      aria-label={text}
     >
       {words.map((word, index) => (
         <motion.span
           key={index}
-          className="inline-block mr-2"
-          variants={{
-            hidden: prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 20 },
+          className="inline-block mr-2 last:mr-0"
+          variants={prefersReducedMotion ? {
+            hidden: { opacity: 0 },
+            visible: { opacity: 1 }
+          } : {
+            hidden: { opacity: 0, y: 20 },
             visible: { 
               opacity: 1, 
               y: 0,
-              transition: prefersReducedMotion 
-                ? { duration: 0.3 }
-                : { 
-                    type: 'spring',
-                    stiffness: 120,
-                    damping: 12
-                  }
+              transition: { 
+                type: 'spring',
+                stiffness: 120,
+                damping: 12
+              }
             }
           }}
         >
@@ -135,7 +323,7 @@ const RotatingFacts = ({ facts }) => {
   }, [facts.length, prefersReducedMotion]);
 
   return (
-    <div {...bind()} className="h-16 relative overflow-hidden my-6 touch-pan-x">
+    <div {...bind()} className="h-16 relative overflow-hidden my-6 touch-pan-x" aria-live="polite">
       <AnimatePresence mode="wait">
         <motion.div
           key={currentIndex}
@@ -146,7 +334,7 @@ const RotatingFacts = ({ facts }) => {
             duration: prefersReducedMotion ? 0 : 0.5, 
             ease: [0.4, 0, 0.2, 1] 
           }}
-          className="absolute w-full text-center text-3xl md:text-4xl font-bold text-secondary"
+          className="absolute w-full text-center text-2xl md:text-3xl font-bold text-secondary"
         >
           {facts[currentIndex]}
         </motion.div>
@@ -159,14 +347,12 @@ const CVButton = ({ onClick, text, ariaLabel, isDark }) => {
   return (
     <motion.button
       onClick={onClick}
-      className="relative inline-flex items-center justify-center px-8 py-4 rounded-full font-semibold overflow-hidden group mobile-tap-target"
+      className="relative inline-flex items-center justify-center px-6 py-3 rounded-full font-medium overflow-hidden group transition-transform"
       whileHover={{ 
-        scale: 1.05,
+        scale: 1.03,
         transition: { type: 'spring', stiffness: 300 }
       }}
-      whileTap={{ scale: 0.95 }}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
+      whileTap={{ scale: 0.97 }}
       aria-label={ariaLabel}
       style={{ willChange: 'transform' }}
     >
@@ -179,27 +365,23 @@ const CVButton = ({ onClick, text, ariaLabel, isDark }) => {
           ]
         }}
         transition={{
-          duration: 6,
+          duration: 8,
           repeat: Infinity,
           repeatType: 'reverse'
         }}
       />
-      
-      <motion.span 
-        className="relative flex items-center gap-3 z-10 text-white"
-        whileHover={{ scale: 1.05 }}
-      >
-        <FiDownload className="w-5 h-5" />
+      <span className="relative flex items-center gap-2 z-10 text-white text-sm md:text-base">
+        <FiDownload className="w-4 h-4 md:w-5 md:h-5" />
         <span>{text}</span>
-      </motion.span>
+      </span>
     </motion.button>
   );
 };
 
 const AnimatedCard = ({ children }) => (
   <motion.div
-    className="p-6 md:p-8 rounded-2xl bg-background-card border border-border shadow-xl hover:shadow-2xl transition-all"
-    whileHover={{ y: -5 }}
+    className="p-5 md:p-6 rounded-xl bg-background-card border border-border shadow-lg hover:shadow-xl transition-all"
+    whileHover={{ y: -3 }}
     transition={{ type: 'spring', stiffness: 200 }}
     style={{ willChange: 'transform' }}
   >
@@ -208,11 +390,23 @@ const AnimatedCard = ({ children }) => (
 );
 
 export default function About() {
-  const { language, isDark } = useTheme();
+  const { language, isDark, toggleTheme, toggleLanguage } = useTheme();
   const currentContent = content[language];
   const isRTL = language === 'AR';
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef(null);
   const { scrollY } = useScroll();
   const opacity = useTransform(scrollY, [0, 200], [1, 0.8], { clamp: false });
+
+  const scrollTo = useCallback((id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      const yOffset = window.innerWidth < 768 ? -60 : -80;
+      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+      setIsMenuOpen(false);
+    }
+  }, []);
 
   const handleDownloadCV = () => {
     try {
@@ -226,36 +420,192 @@ export default function About() {
     }
   };
 
+  useGesture(
+    {
+      onDrag: ({ direction: [_, dy] }) => {
+        if (dy > 3) setIsMenuOpen(false);
+      }
+    },
+    { target: menuRef, drag: { axis: 'y' } }
+  );
+
+  const EducationSection = () => (
+    <AnimatedCard>
+      <div className="space-y-4">
+        <div className="flex items-center gap-4">
+          <div className="p-3 rounded-full bg-primary/10 text-primary">
+            <FaUniversity className="w-6 h-6" />
+          </div>
+          <h3 className="text-xl md:text-2xl font-semibold text-text-primary">
+            {currentContent.education.university}
+          </h3>
+        </div>
+        
+        <div className="flex items-center gap-4">
+          <div className="p-3 rounded-full bg-secondary/10 text-secondary">
+            <FaGraduationCap className="w-5 h-5" />
+          </div>
+          <p className="text-base md:text-lg text-text-primary">
+            {currentContent.education.degree}
+          </p>
+        </div>
+        
+        <p className="font-medium text-secondary mt-3">
+          {currentContent.education.year}
+        </p>
+      </div>
+    </AnimatedCard>
+  );
+
   return (
     <section 
       id="about" 
-      className="relative min-h-screen"
+      className="relative min-h-screen bg-gradient-to-b from-background to-background/50"
       dir={isRTL ? 'rtl' : 'ltr'}
+      aria-label="About Section"
     >
-      <motion.div 
-        className="fixed inset-0 z-0 bg-gradient-to-b from-background via-background-card/90 to-background"
-        style={{ 
-          opacity,
-          backgroundImage: `url('/noise.png'), linear-gradient(to bottom, var(--color-background), var(--color-background-card) 90%, var(--color-background))`,
-          backgroundBlendMode: 'multiply'
-        }}
-      />
+      <AnimatedBackground />
 
-      <div className="relative z-10 pt-20 pb-16">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-md shadow-sm">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <motion.div
+              className="flex items-center space-x-2"
+              whileHover={{ scale: 1.02 }}
+            >
+              <span className="text-lg font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                {currentContent.name}
+              </span>
+            </motion.div>
+
+            <div className="hidden md:flex items-center space-x-3">
+              {Object.entries(currentContent.nav).map(([id, title]) => (
+                <NavItem
+                  key={id}
+                  title={title}
+                  isActive={false}
+                  onClick={() => id !== 'resume' && scrollTo(id)}
+                  href={id === 'resume' ? '/cv-seba-salamah.pdf' : undefined}
+                  isRTL={isRTL}
+                />
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
+                <motion.a
+                  href="https://github.com/Seba-00"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ y: -2 }}
+                  className="p-1.5 rounded-lg text-text-secondary hover:text-primary transition-colors"
+                  aria-label={language === 'EN' ? 'GitHub profile' : 'ملف جيت هب'}
+                >
+                  <FaGithub className="w-4 h-4" />
+                </motion.a>
+
+                <motion.a
+                  href="https://www.linkedin.com/in/seba-salamah-7916742b8/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ y: -2 }}
+                  className="p-1.5 rounded-lg text-text-secondary hover:text-primary transition-colors"
+                  aria-label={language === 'EN' ? 'LinkedIn profile' : 'ملف لينكد إن'}
+                >
+                  <FaLinkedin className="w-4 h-4" />
+                </motion.a>
+
+                <div className="h-5 w-px bg-border/20 mx-1" />
+
+                <motion.button
+                  onClick={toggleLanguage}
+                  className="flex items-center gap-1 px-2 py-1 rounded-lg text-text-secondary hover:text-primary transition-colors"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <IoLanguage className="w-4 h-4" />
+                  <span className="text-xs font-medium">
+                    {language === 'EN' ? 'عربي' : 'English'}
+                  </span>
+                </motion.button>
+
+                <motion.button
+                  onClick={toggleTheme}
+                  className="p-1.5 rounded-lg text-text-secondary hover:text-primary transition-colors"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  {isDark ? <FiSun className="w-4 h-4" /> : <FiMoon className="w-4 h-4" />}
+                </motion.button>
+              </div>
+
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="md:hidden p-1.5 rounded-lg text-text-secondary"
+              >
+                {isMenuOpen ? <FiX className="w-5 h-5" /> : <FiMenu className="w-5 h-5" />}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              ref={menuRef}
+              className="md:hidden fixed inset-0 z-50 bg-background/95 backdrop-blur-lg"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="flex flex-col h-full p-4">
+                <div className="flex justify-end mb-4">
+                  <button
+                    onClick={() => setIsMenuOpen(false)}
+                    className="p-2 rounded-lg hover:bg-primary/10 transition-colors"
+                  >
+                    <FiX className="w-5 h-5" />
+                  </button>
+                </div>
+                
+                <div className="space-y-2">
+                  {Object.entries(currentContent.nav).map(([id, title]) => (
+                    <button
+                      key={id}
+                      onClick={() => {
+                        if (id === 'resume') {
+                          window.open('/cv-seba-salamah.pdf', '_blank');
+                        } else {
+                          scrollTo(id);
+                        }
+                        setIsMenuOpen(false);
+                      }}
+                      className="w-full text-left p-3 rounded-lg text-base transition-colors hover:bg-primary/10"
+                    >
+                      {title}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </nav>
+
+      <div className="relative z-10 pt-24 pb-12 md:pt-28 md:pb-16">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatePresence mode="wait">
             <motion.div
               key={language}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.4, ease: 'easeInOut' }}
-              className="text-center mb-16"
+              transition={{ duration: 0.4 }}
+              className="text-center mb-10 md:mb-14"
             >
               <AnimatedTitle text={currentContent.title} />
               
               <motion.p 
-                className="text-xl md:text-2xl max-w-3xl mx-auto font-light text-text-secondary mt-4"
+                className="text-lg max-w-2xl mx-auto text-text-secondary/90 mt-3 leading-relaxed"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
@@ -267,152 +617,69 @@ export default function About() {
             </motion.div>
           </AnimatePresence>
 
-          <div className="grid md:grid-cols-12 gap-8 lg:gap-12 items-start">
+          <div className="grid md:grid-cols-12 gap-6 items-start">
             <motion.div 
-              className="md:col-span-7 space-y-8"
-              initial={{ opacity: 0, x: -50 }}
+              className="md:col-span-7 space-y-5"
+              initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ 
-                duration: 0.8, 
-                delay: 0.2,
-                ease: [0.4, 0, 0.2, 1]
-              }}
+              transition={{ duration: 0.6, delay: 0.2 }}
             >
               <AnimatedCard>
-                <motion.div
-                  className="text-lg md:text-xl leading-relaxed text-text-primary"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ staggerChildren: 0.1 }}
-                >
+                <div className="prose prose-lg text-text-primary">
                   {currentContent.bio.split('. ').map((sentence, index) => (
-                    <motion.span
-                      key={index}
-                      className="block mb-4 last:mb-0"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ 
-                        duration: 0.4,
-                        ease: 'easeOut'
-                      }}
-                    >
+                    <p key={index} className="leading-relaxed">
                       {sentence}.
-                    </motion.span>
+                    </p>
                   ))}
-                </motion.div>
+                </div>
               </AnimatedCard>
 
-              <div className="space-y-8">
-                <AnimatedCard>
-                  <div className="space-y-4">
-                    <motion.div 
-                      className="flex items-center gap-4 mb-6 cursor-pointer"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      onClick={() => window.open('https://www.kau.edu.sa', '_blank')}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <motion.div 
-                        className="p-3 rounded-full bg-primary/10 text-primary mobile-tap-target"
-                        whileHover={{ rotate: 360 }}
-                        transition={{ duration: 0.8 }}
-                      >
-                        <FaUniversity className="w-8 h-8" />
-                      </motion.div>
-                      <h3 className="text-2xl md:text-3xl font-bold text-primary hover:underline">
-                        {currentContent.education.university}
-                      </h3>
-                    </motion.div>
-                    
-                    <motion.div 
-                      className="flex items-center gap-4"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.2 }}
-                    >
-                      <motion.div 
-                        className="p-3 rounded-full bg-secondary/10 text-secondary mobile-tap-target"
-                        whileHover={{ scale: 1.1 }}
-                      >
-                        <FaGraduationCap className="w-6 h-6" />
-                      </motion.div>
-                      <p className="text-lg md:text-xl text-text-primary">
-                        {currentContent.education.degree}
-                      </p>
-                    </motion.div>
-                    
-                    <motion.p 
-                      className="font-medium text-secondary mt-4"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.4 }}
-                    >
-                      {currentContent.education.year}
-                    </motion.p>
-                  </div>
-                </AnimatedCard>
-
+              <div className="space-y-5">
+                <EducationSection />
+                
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 0.6 }}
+                  transition={{ delay: 0.4 }}
+                  className="text-center"
                 >
                   <CVButton 
                     onClick={handleDownloadCV}
                     text={currentContent.downloadCV}
-                    ariaLabel={`${currentContent.downloadCV} ${currentContent.cvSize}`}
+                    ariaLabel={`${currentContent.downloadCV} - ${currentContent.cvSize}`}
                     isDark={isDark}
                   />
+                  <p className="text-sm text-text-secondary/80 mt-2">
+                    {currentContent.cvSize}
+                  </p>
                 </motion.div>
               </div>
             </motion.div>
 
             <motion.div 
-              className="md:col-span-5 relative"
-              initial={{ opacity: 0, x: 50 }}
+              className="md:col-span-5"
+              initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ 
-                duration: 0.8, 
-                delay: 0.4,
-                ease: [0.4, 0, 0.2, 1]
-              }}
+              transition={{ duration: 0.6, delay: 0.4 }}
             >
-              <motion.div
-                className="relative aspect-square rounded-[2rem] overflow-hidden border-4 border-border shadow-2xl hover:shadow-3xl transition-all"
-                whileHover={{ 
-                  scale: 1.02,
-                  rotate: 1,
-                  transition: { type: 'spring', stiffness: 200 }
-                }}
-                animate={{
-                  y: [0, 15, -15, 0]
-                }}
-                transition={{
-                  duration: 8,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-                style={{ willChange: 'transform' }}
-              >
+              <div className="relative aspect-square rounded-xl overflow-hidden border border-border/20 shadow-lg">
                 <Image
                   src="/images/graduate.png"
                   alt={currentContent.altImage}
                   fill
                   className="object-cover"
                   priority
-                  fetchPriority="high"
-                  quality={100}
+                  quality={90}
                   placeholder="blur"
                   blurDataURL="/images/graduate-blur.jpg"
-                  sizes="(max-width: 768px) 90vw, 50vw"
+                  sizes="(max-width: 768px) 90vw, 40vw"
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/30" />
-              </motion.div>
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/20" />
+              </div>
             </motion.div>
           </div>
         </div>
       </div>
     </section>
   );
-}
+}*/

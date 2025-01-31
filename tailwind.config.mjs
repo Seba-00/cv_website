@@ -16,11 +16,16 @@ module.exports = {
         foreground: 'rgb(var(--color-foreground) / <alpha-value>)',
         muted: 'rgb(var(--color-muted) / <alpha-value>)',
         border: 'rgb(var(--color-border) / <alpha-value>)'
+
+    
       },
     },
   },
+ 
  
 
   plugins: [],
   darkMode: 'class',
 }
+
+

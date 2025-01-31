@@ -1,4 +1,5 @@
 'use client';
+
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -13,6 +14,7 @@ import { FaNode } from 'react-icons/fa';
 // =================
 // CONTENT CONFIGURATION
 // =================
+
 const content = {
   EN: {
     title: "Geovision Explorer",
@@ -103,6 +105,7 @@ const content = {
 // =================
 // MAIN COMPONENT
 // =================
+
 export default function Project1() {
   const { language } = useTheme();
   const currentContent = content[language];
@@ -111,7 +114,7 @@ export default function Project1() {
 
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: { 
+    visible: {
       opacity: 1,
       transition: { staggerChildren: 0.1 }
     }
@@ -119,8 +122,8 @@ export default function Project1() {
 
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       transition: { type: 'spring', stiffness: 120 }
     }
@@ -129,26 +132,27 @@ export default function Project1() {
   return (
     <div className="min-h-screen relative overflow-hidden">
       <AnimatedBackground />
-      
+
       {/* Main Content Container */}
-      <motion.div 
+      <motion.div
         className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
         {/* Back Button */}
-        <motion.div variants={itemVariants}>
-          <Link href="/#projects">
-            <motion.div
-              className="inline-flex items-center gap-2 mb-8 px-4 py-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
-              whileHover={{ x: isRTL ? 8 : -8 }}
-            >
-              <FaArrowLeft className={`${isRTL ? 'ml-2 rotate-180' : 'mr-2'}`} />
-              {currentContent.links.back}
-            </motion.div>
-          </Link>
-        </motion.div>
+        <Link
+          href="/#projects"
+          scroll={false}
+        >
+          <motion.div
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+            whileHover={{ x: isRTL ? 8 : -8 }}
+          >
+            <FaArrowLeft className={`${isRTL ? 'ml-2 rotate-180' : 'mr-2'}`} />
+            {currentContent.links.back}
+          </motion.div>
+        </Link>
 
         {/* Project Title */}
         <motion.h1
@@ -185,8 +189,8 @@ export default function Project1() {
               </h2>
               <ul className="space-y-2">
                 {currentContent.features.map((feature, index) => (
-                  <li 
-                    key={index} 
+                  <li
+                    key={index}
                     className="flex items-center gap-2 text-text-primary"
                   >
                     <span className="w-2 h-2 rounded-full bg-primary" />
@@ -200,7 +204,7 @@ export default function Project1() {
           {/* Right Column - Images */}
           <motion.div className="space-y-6" variants={itemVariants}>
             {/* Main Image */}
-            <motion.div 
+            <motion.div
               className="relative aspect-video rounded-xl overflow-hidden border border-border"
               whileHover={{ scale: 1.02 }}
             >
@@ -225,9 +229,9 @@ export default function Project1() {
                   whileHover={{ scale: 1.05 }}
                   onClick={() => setSelectedImage(index)}
                 >
-                  <Image 
-                    src={image} 
-                    alt={`Preview ${index + 1}`} 
+                  <Image
+                    src={image}
+                    alt={`Preview ${index + 1}`}
                     fill
                     className="object-cover"
                   />
@@ -294,7 +298,7 @@ export default function Project1() {
         )}
 
         {/* Footer Links */}
-        <motion.div 
+        <motion.div
           className="flex flex-wrap justify-center gap-6 mt-12"
           variants={itemVariants}
         >
