@@ -1,24 +1,104 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
-import { FiDownload } from 'react-icons/fi';
-import { FaGraduationCap } from 'react-icons/fa';
+import { FiDownload, FiSun, FiMoon, FiX, FiMenu } from 'react-icons/fi';
+import { FaGithub, FaLinkedin, FaGraduationCap } from 'react-icons/fa';
+import { IoLanguage } from 'react-icons/io5';
 import { AnimatedBackground } from '../components/AnimatedBackground';
-import PageTransition from '../components/PageTransition';
+import Link from 'next/link';
 
-const RotatingText = ({ texts }) => {
+const content = {
+  EN: {
+    title: "About Me",
+    bio: "As a Computer Science graduate from King Abdulaziz University, I blend Saudi innovation with global tech trends. My journey in tech started with curiosity and evolved into a passion for creating impactful digital solutions.",
+    education: {
+      degree: "Bachelor in Computer Science",
+      university: "King Abdulaziz University",
+      year: "2020-2024"
+    },
+    traits: [
+      "Full Stack Developer",
+      "Problem Solver",
+      "Digital Creator",
+      "Tech Enthusiast"
+    ],
+    downloadCV: "Download CV",
+    nav: {
+      home: 'Home',
+      about: 'About',
+      skills: 'Skills',
+      projects: 'Projects',
+      contact: 'Contact',
+    }
+  },
+  AR: {
+    title: "نبذة عني",
+    bio: "كخريج علوم الحاسب من جامعة الملك عبدالعزيز، أمزج بين الابتكار السعودي واتجاهات التقنية العالمية. بدأت رحلتي في التقنية بالفضول وتطورت إلى شغف بإنشاء حلول رقمية مؤثرة.",
+    education: {
+      degree: "بكالوريوس علوم الحاسب",
+      university: "جامعة الملك عبدالعزيز",
+      year: "٢٠٢٠-٢٠٢٤"
+    },
+    traits: [
+      "مطور ويب شامل",
+      "حلال مشاكل",
+      "مبتكر رقمي",
+      "شغوف بالتقنية"
+    ],
+    downloadCV: "تحميل السيرة الذاتية",
+    nav: {
+      home: 'الرئيسية',
+      about: 'نبذة عني',
+      skills: 'المهارات',
+      projects: 'المشاريع',
+      contact: 'اتصل بي',
+    }
+  }
+};
+
+const ScrollReveal = ({ children, delay = 0 }) => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 30 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+      transition={{ 
+        duration: 0.5, 
+        delay,
+        ease: [0.25, 0.1, 0.25, 1]
+      }}
+    >
+      {children}
+    </motion.div>
+  );
+};
+
+const NavItem = ({ title, onClick }) => (
+  <motion.button
+    onClick={onClick}
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
+    className="px-4 py-2 text-text-secondary hover:text-primary transition-colors"
+  >
+    {title}
+  </motion.button>
+);
+
+const RotatingTraits = ({ traits }) => {
   const [index, setIndex] = useState(0);
 
   React.useEffect(() => {
     const timer = setInterval(() => {
-      setIndex((prev) => (prev + 1) % texts.length);
-    }, 2000); // Faster rotation
-
+      setIndex((prev) => (prev + 1) % traits.length);
+    }, 2000);
     return () => clearInterval(timer);
-  }, [texts.length]);
+  }, [traits.length]);
 
   return (
     <div className="h-12 relative overflow-hidden">
@@ -27,50 +107,113 @@ const RotatingText = ({ texts }) => {
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: -20, opacity: 0 }}
-        transition={{ duration: 0.2 }} // Faster transition
+        transition={{ duration: 0.2 }}
         className="absolute w-full text-xl text-secondary font-medium"
       >
-        {texts[index]}
+        {traits[index]}
       </motion.div>
     </div>
   );
 };
 
 export default function About() {
-  const { language } = useTheme();
+  const { language, isDark, toggleTheme, toggleLanguage } = useTheme();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const currentContent = content[language];
   const isRTL = language === 'AR';
+  const headerRef = useRef(null);
+  const isHeaderInView = useInView(headerRef, { once: true });
+
+  const scrollTo = (id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      const yOffset = -80;
+      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+      setIsMenuOpen(false);
+    }
+  };
 
   return (
-    <PageTransition>
-      <section 
-        id="about" 
-        className="relative min-h-screen"
-        dir={isRTL ? 'rtl' : 'ltr'}
+    <section
+      id="about"
+      className="relative min-h-screen"
+      dir={isRTL ? 'rtl' : 'ltr'}
+    >
+      <AnimatedBackground />
+
+      <motion.nav
+        ref={headerRef}
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg"
       >
-        <AnimatedBackground />
-        
-        <div className="relative z-10 pt-32 pb-16 px-6">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3 }}
-                className="space-y-8"
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="flex items-center justify-between h-20">
+            <Link href="/" className="text-xl font-bold text-primary">
+              SEBA
+            </Link>
+
+            <div className="hidden md:flex items-center space-x-4">
+              {Object.entries(currentContent.nav).map(([id, title]) => (
+                <NavItem
+                  key={id}
+                  title={title}
+                  onClick={() => scrollTo(id)}
+                />
+              ))}
+            </div>
+
+            <div className="flex items-center gap-4">
+              <motion.button
+                onClick={toggleLanguage}
+                whileHover={{ scale: 1.1 }}
+                className="p-2 text-text-secondary hover:text-primary"
               >
+                <IoLanguage className="w-5 h-5" />
+              </motion.button>
+
+              <motion.button
+                onClick={toggleTheme}
+                whileHover={{ scale: 1.1 }}
+                className="p-2 text-text-secondary hover:text-primary"
+              >
+                {isDark ? <FiSun className="w-5 h-5" /> : <FiMoon className="w-5 h-5" />}
+              </motion.button>
+
+              <button
+                className="md:hidden"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                {isMenuOpen ? <FiX className="w-6 h-6" /> : <FiMenu className="w-6 h-6" />}
+              </button>
+            </div>
+          </div>
+        </div>
+      </motion.nav>
+
+      <div className="relative z-10 pt-32 pb-16 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="space-y-8">
+              <ScrollReveal>
                 <div>
                   <h1 className="text-4xl font-bold text-text-primary mb-4">
                     {currentContent.title}
                   </h1>
-                  <RotatingText texts={currentContent.traits} />
+                  <RotatingTraits traits={currentContent.traits} />
                 </div>
+              </ScrollReveal>
 
+              <ScrollReveal delay={0.2}>
                 <p className="text-lg text-text-secondary leading-relaxed">
                   {currentContent.bio}
                 </p>
+              </ScrollReveal>
 
-                <motion.div 
+              <ScrollReveal delay={0.4}>
+                <motion.div
                   className="bg-background-card p-6 rounded-xl"
                   whileHover={{ y: -5 }}
                   transition={{ duration: 0.2 }}
@@ -88,24 +231,26 @@ export default function About() {
                   </div>
                   <p className="text-secondary">{currentContent.education.year}</p>
                 </motion.div>
+              </ScrollReveal>
 
+              <ScrollReveal delay={0.6}>
                 <motion.button
                   onClick={() => window.open('/cv-seba-salamah.pdf', '_blank')}
-                  className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg"
+                  className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  transition={{ duration: 0.2 }}
                 >
                   <FiDownload className="w-5 h-5" />
                   {currentContent.downloadCV}
                 </motion.button>
-              </motion.div>
+              </ScrollReveal>
+            </div>
 
+            <ScrollReveal delay={0.3}>
               <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3 }}
                 className="relative aspect-square rounded-2xl overflow-hidden"
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.2 }}
               >
                 <Image
                   src="/images/graduate.png"
@@ -116,15 +261,13 @@ export default function About() {
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </motion.div>
-            </div>
+            </ScrollReveal>
           </div>
         </div>
-      </section>
-    </PageTransition>
+      </div>
+    </section>
   );
 }
-
-
 
 
 /*'use client';

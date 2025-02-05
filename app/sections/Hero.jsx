@@ -389,6 +389,479 @@ export default function Hero() {
   }*/
   
 
+/*
+ 'use client';
+
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { FaGithub, FaLinkedin } from 'react-icons/fa';
+import { FiSun, FiMoon, FiX, FiMenu } from 'react-icons/fi';
+import { IoLanguage } from 'react-icons/io5';
+import { useTheme } from '../context/ThemeContext';
+import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
+import Link from 'next/link';
+
+// Animation variants
+const fadeInUp = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -20 }
+};
+
+const stagger = {
+  animate: {
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+    
+    
+    const AnimatedBackground = dynamic(
+      () => import('../components/AnimatedBackground').then(mod => mod.AnimatedBackground),
+      {
+        ssr: false,
+        loading: () => <div className="absolute inset-0 bg-background" />
+      }
+    );
+    
+    
+    const NavItem = React.memo(({ title, active, onClick, isRTL, href }) => (
+      <motion.div
+        className="relative px-3 py-2 group"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        {href ? (
+          <Link
+            href={href}
+            className={`relative z-10 transition-colors duration-300 text-sm font-medium ${
+              active ? 'text-primary' : 'text-text-secondary hover:text-primary'
+            }`}
+            aria-label={`Open ${title}`}
+          >
+            {title}
+          </Link>
+        ) : (
+          <button
+            onClick={onClick}
+            className={`relative z-10 transition-colors duration-300 text-sm font-medium ${
+              active ? 'text-primary' : 'text-text-secondary hover:text-primary'
+            }`}
+            aria-current={active ? 'page' : undefined}
+          >
+            {title}
+          </button>
+        )}
+        {active && !href && (
+          <motion.div
+            layoutId="navIndicator"
+            className="absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-full"
+            transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+          />
+        )}
+      </motion.div>
+    ));
+    
+    
+    export default function Hero() {
+      const router = useRouter();
+      const [isMounted, setIsMounted] = useState(false);
+      const { isDark, toggleTheme, language, toggleLanguage } = useTheme();
+      const { scrollY } = useScroll();
+      const [activeSection, setActiveSection] = useState('home');
+      const [isMenuOpen, setIsMenuOpen] = useState(false);
+      const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
+      const heroRef = useRef(null);
+      const isRTL = language === 'AR';
+    
+    
+      // Memoized content to prevent unnecessary recalculations
+      const content = React.useMemo(() => ({
+        EN: {
+          greeting: "Hello, I'm",
+          name: 'SEBA',
+          subtitle: 'Crafting digital experiences with code ✨',
+          roles: ['Full Stack Developer', 'UI/UX Enthusiast', 'Problem Solver', 'Tech Explorer'],
+          nav: {
+            home: 'Home',
+            about: 'About',
+            skills: 'Skills',
+            projects: 'Projects',
+            contact: 'Contact',
+            resume: 'Resume',
+          },
+          projectButton: 'See My Projects',
+          graduateStatus: 'Computer Science Graduate',
+        },
+        AR: {
+          greeting: 'مرحباً، أنا',
+          name: 'صبا',
+          subtitle: 'أصنع تجارب رقمية بالكود ✨',
+          roles: ['مطور ويب شامل', 'مصمم واجهات', 'حلال مشاكل', 'مستكشف تقني'],
+          nav: {
+            home: 'الرئيسية',
+            about: 'نبذة عني',
+            skills: 'المهارات',
+            projects: 'المشاريع',
+            contact: 'اتصل بي',
+            resume: 'السيرة الذاتية',
+          },
+          projectButton: 'شاهد مشاريعي',
+          graduateStatus: 'خريج علوم الحاسوب',
+        },
+      }), []);
+    
+    
+    
+      const currentContent = content[language];
+      const navItems = React.useMemo(() =>
+        Object.entries(currentContent.nav).map(([id, title]) => ({ id, title })),
+        [currentContent.nav]
+      );
+    
+    
+      const socialLinks = [
+        { Icon: FaGithub, href: "https://github.com/Seba-00" },
+        { Icon: FaLinkedin, href: "https://www.linkedin.com/in/seba-salamah-7916742b8/" }
+      ];
+    
+    
+    
+      // Throttled scroll handler
+      const handleScroll = useCallback(() => {
+        const sections = ['home', 'about', 'skills', 'projects', 'contact'];
+        const currentPos = window.scrollY + 100;
+    
+    
+        for (const section of sections) {
+          const element = document.getElementById(section);
+          if (element) {
+            const { offsetTop, offsetHeight } = element;
+            if (currentPos >= offsetTop && currentPos < offsetTop + offsetHeight) {
+              setActiveSection(section);
+              break;
+            }
+          }
+        }
+      }, []);
+    
+    
+      useEffect(() => {
+        setIsMounted(true);
+        return () => setIsMounted(false);
+      }, []);
+    
+    
+      useEffect(() => {
+        const interval = setInterval(() => {
+          setCurrentRoleIndex(prev => (prev + 1) % currentContent.roles.length);
+        }, 3000);
+        return () => clearInterval(interval);
+      }, [currentContent.roles.length]);
+    
+    
+      useEffect(() => {
+        if (!isMounted) return;
+    
+    
+        const throttledScroll = throttle(handleScroll, 100);
+        window.addEventListener('scroll', throttledScroll);
+        return () => window.removeEventListener('scroll', throttledScroll);
+      }, [isMounted, handleScroll]);
+    
+    
+   // Enhanced scroll handler with smoother behavior
+   const scrollTo = useCallback((id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      const yOffset = -80;
+      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      
+      // Using native smooth scroll with a faster duration
+      window.scrollTo({
+        top: y,
+        behavior: 'smooth'
+      });
+      
+      setActiveSection(id);
+      setIsMenuOpen(false);
+    }
+  }, []);
+
+     // Projects button click handler
+  const handleProjectsClick = (e) => {
+    e.preventDefault();
+    scrollTo('projects');
+  };
+
+      const navOpacity = useTransform(scrollY, [0, 100], [0.8, 1]);
+    
+    
+      if (!isMounted) {
+        return null;
+      }
+    
+    
+      return (
+          <div id="home" ref={heroRef} className="relative min-h-screen overflow-hidden bg-gradient-to-b from-background to-background/50">
+      <AnimatedBackground />
+    
+    
+        <nav className="fixed top-0 left-0 right-0 z-[100] bg-background/90 backdrop-blur-md shadow-sm">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-16">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Link 
+                  href="#home" 
+                  scroll={false} 
+                  className="flex items-center cursor-pointer"
+                  onClick={() => scrollTo('home')}
+                >
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    className="flex items-center gap-3"
+                  >
+                    <motion.h1 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                      SEBA
+                    </motion.h1>
+                    <span className="text-xs font-medium px-2 py-1 rounded-full bg-primary/10 text-primary">
+                      {currentContent.graduateStatus}
+                    </span>
+                  </motion.div>
+                </Link>
+              </motion.div>
+    
+    
+              <div className="hidden md:flex items-center space-x-2">
+                {navItems.map((item, index) => (
+                  <motion.div
+                    key={item.id}
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <NavItem
+                      title={item.title}
+                      active={activeSection === item.id}
+                      onClick={() => item.id !== 'resume' && scrollTo(item.id)}
+                      href={item.id === 'resume' ? '/resume' : undefined}
+                      isRTL={isRTL}
+                    />
+                  </motion.div>
+                ))}
+              </div>
+    
+    
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                  {socialLinks.map((social, index) => (
+                    <motion.a
+                      key={social.href}
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 + index * 0.1 }}
+                      whileHover={{ y: -2 }}
+                      className="p-1.5 rounded-lg text-text-secondary hover:text-primary transition-colors"
+                    >
+                      <social.Icon className="w-4 h-4" />
+                    </motion.a>
+                  ))}
+                </div>
+    
+    
+                <div className="h-5 w-px bg-border/20" />
+    
+    
+                <motion.button
+                  onClick={toggleLanguage}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.7 }}
+                  className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-text-secondary hover:text-primary transition-colors text-sm"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <IoLanguage className="w-4 h-4" />
+                  <span className="font-medium">
+                    {language === 'EN' ? 'عربي' : 'English'}
+                  </span>
+                </motion.button>
+    
+    
+                <motion.button
+                  onClick={toggleTheme}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.8 }}
+                  className="p-1.5 rounded-lg text-text-secondary hover:text-primary transition-colors"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  {isDark ? <FiSun className="w-4 h-4" /> : <FiMoon className="w-4 h-4" />}
+                </motion.button>
+    
+    
+                <motion.button
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  className="md:hidden p-1.5 rounded-lg text-text-secondary"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.9 }}
+                >
+                  {isMenuOpen ? <FiX className="w-5 h-5" /> : <FiMenu className="w-5 h-5" />}
+                </motion.button>
+              </div>
+            </div>
+          </div>
+    
+    
+          <AnimatePresence>
+            {isMenuOpen && (
+              <motion.div
+                className="md:hidden fixed inset-0 z-50 bg-background/95 backdrop-blur-lg"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <div className="flex flex-col h-full p-4">
+                  <div className="flex justify-end mb-6">
+                    <button
+                      onClick={() => setIsMenuOpen(false)}
+                      className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800/50"
+                    >
+                      <FiX className="w-5 h-5" />
+                    </button>
+                  </div>
+                  <div className="space-y-2">
+                    {navItems.map((item, index) => (
+                      <motion.button
+                        key={item.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        onClick={() => {
+                          if (item.id === 'resume') {
+                            router.push('/resume');
+                          } else {
+                            scrollTo(item.id);
+                          }
+                          setIsMenuOpen(false);
+                        }}
+                        className={`w-full text-left p-3 rounded-lg text-base ${
+                          activeSection === item.id
+                            ? 'bg-primary/10 text-primary'
+                            : 'hover:bg-gray-100 dark:hover:bg-gray-800/50'
+                        }`}
+                      >
+                        {item.title}
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </nav>
+    
+    
+        <motion.div 
+        variants={stagger}
+        initial="initial"
+        animate="animate"
+        className="relative z-10 flex flex-col items-center justify-center min-h-screen text-center px-4 sm:px-6 lg:px-8"
+      >
+        <motion.div
+          variants={fadeInUp}
+          className="max-w-3xl space-y-6"
+        >
+          <motion.div
+            variants={fadeInUp}
+            className="font-mono text-base sm:text-lg text-primary/90"
+          >
+            {currentContent.greeting}
+          </motion.div>
+
+          <motion.h1
+            variants={fadeInUp}
+            className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight"
+          >
+            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              {currentContent.name}
+            </span>
+          </motion.h1>
+
+          <div className="h-16 flex items-center justify-center">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentRoleIndex}
+                variants={fadeInUp}
+                className="text-xl sm:text-2xl font-medium text-text-secondary"
+                transition={{ duration: 0.2 }}
+              >
+                {currentContent.roles[currentRoleIndex]}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          <motion.p
+            variants={fadeInUp}
+            className="text-base sm:text-lg text-text-secondary/90 max-w-xl mx-auto leading-relaxed"
+          >
+            {currentContent.subtitle}
+          </motion.p>
+
+          <motion.div variants={fadeInUp}>
+            <motion.button
+              onClick={handleProjectsClick}
+              className="group relative inline-flex items-center justify-center px-6 py-3 rounded-lg font-medium text-white bg-gradient-to-r from-primary to-secondary transition-all duration-200"
+              whileHover={{ scale: 1.02, boxShadow: "0 4px 15px rgba(0,0,0,0.1)" }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <span className="relative z-10">{currentContent.projectButton}</span>
+              <motion.div
+                className="absolute inset-0 rounded-lg bg-white/10"
+                initial={{ opacity: 0 }}
+                whileHover={{ opacity: 1 }}
+                transition={{ duration: 0.2 }}
+              />
+            </motion.button>
+          </motion.div>
+        </motion.div>
+      </motion.div>
+    </div>
+  );
+}
+    
+    
+    
+    // Throttle utility function
+    function throttle(func, limit) {
+      let lastFunc;
+      let lastRan;
+      return function(...args) {
+        if (!lastRan) {
+          func.apply(this, args);
+          lastRan = Date.now();
+        } else {
+          clearTimeout(lastFunc);
+          lastFunc = setTimeout(() => {
+            if ((Date.now() - lastRan) >= limit) {
+              func.apply(this, args);
+              lastRan = Date.now();
+            }
+          }, limit - (Date.now() - lastRan));
+        }
+      };
+    }*/
+
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
@@ -397,57 +870,72 @@ import { FaGithub, FaLinkedin } from 'react-icons/fa';
 import { FiSun, FiMoon, FiX, FiMenu } from 'react-icons/fi';
 import { IoLanguage } from 'react-icons/io5';
 import { useTheme } from '../context/ThemeContext';
+import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 
+const fadeInUp = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -20 }
+};
+
+const stagger = {
+  animate: {
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
 const AnimatedBackground = dynamic(
   () => import('../components/AnimatedBackground').then(mod => mod.AnimatedBackground),
-  {
-    ssr: false,
-    loading: () => <div className="absolute inset-0 bg-background" />
-  }
+  { ssr: false, loading: () => <div className="absolute inset-0 bg-background" /> }
 );
 
-const NavItem = React.memo(({ title, active, onClick, isRTL, href }) => (
-  <motion.div
-    className="relative px-3 py-2 group"
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-  >
-    {href ? (
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
+const NavItem = React.memo(({ title, active, onClick, isRTL, href }) => {
+  const router = useRouter();
+
+  const handleClick = (e) => {
+    if (href === '/resume') {
+      e.preventDefault();
+      router.push('/resume');
+    } else if (href) {
+      return; // Allow default link behavior
+    } else {
+      e.preventDefault();
+      onClick();
+    }
+  };
+
+  return (
+    <motion.div
+      className="relative px-3 py-2 group"
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+    >
+      <Link
+        href={href || '#'}
+        onClick={handleClick}
         className={`relative z-10 transition-colors duration-300 text-sm font-medium ${
           active ? 'text-primary' : 'text-text-secondary hover:text-primary'
         }`}
-        aria-label={`Open ${title}`}
       >
         {title}
-      </a>
-    ) : (
-      <button
-        onClick={onClick}
-        className={`relative z-10 transition-colors duration-300 text-sm font-medium ${
-          active ? 'text-primary' : 'text-text-secondary hover:text-primary'
-        }`}
-        aria-current={active ? 'page' : undefined}
-      >
-        {title}
-      </button>
-    )}
-    {active && !href && (
-      <motion.div
-        layoutId="navIndicator"
-        className="absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-full"
-        transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
-      />
-    )}
-  </motion.div>
-));
+      </Link>
+      {active && !href && (
+        <motion.div
+          layoutId="navIndicator"
+          className="absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-full"
+          transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+        />
+      )}
+    </motion.div>
+  );
+});
 
 export default function Hero() {
+  const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
   const { isDark, toggleTheme, language, toggleLanguage } = useTheme();
   const { scrollY } = useScroll();
@@ -457,7 +945,6 @@ export default function Hero() {
   const heroRef = useRef(null);
   const isRTL = language === 'AR';
 
-  // Memoized content to prevent unnecessary recalculations
   const content = React.useMemo(() => ({
     EN: {
       greeting: "Hello, I'm",
@@ -499,7 +986,11 @@ export default function Hero() {
     [currentContent.nav]
   );
 
-  // Throttled scroll handler
+  const socialLinks = [
+    { Icon: FaGithub, href: "https://github.com/Seba-00" },
+    { Icon: FaLinkedin, href: "https://www.linkedin.com/in/seba-salamah-7916742b8/" }
+  ];
+
   const handleScroll = useCallback(() => {
     const sections = ['home', 'about', 'skills', 'projects', 'contact'];
     const currentPos = window.scrollY + 100;
@@ -513,6 +1004,15 @@ export default function Hero() {
           break;
         }
       }
+    }
+  }, []);
+
+  const scrollTo = useCallback((id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+      setActiveSection(id);
+      setIsMenuOpen(false);
     }
   }, []);
 
@@ -530,96 +1030,93 @@ export default function Hero() {
 
   useEffect(() => {
     if (!isMounted) return;
-
+    
     const throttledScroll = throttle(handleScroll, 100);
     window.addEventListener('scroll', throttledScroll);
     return () => window.removeEventListener('scroll', throttledScroll);
   }, [isMounted, handleScroll]);
 
-  // Optimized scroll function
-  const scrollTo = useCallback((id) => {
-    const element = document.getElementById(id);
-    if (element) {
-      const yOffset = -80;
-      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-      window.scrollTo({ top: y, behavior: 'smooth' });
-      setActiveSection(id);
-      setIsMenuOpen(false);
-    }
-  }, []);
-
   const navOpacity = useTransform(scrollY, [0, 100], [0.8, 1]);
 
-  if (!isMounted) {
-    return null;
-  }
+  if (!isMounted) return null;
 
   return (
     <div id="home" ref={heroRef} className="relative min-h-screen overflow-hidden bg-gradient-to-b from-background to-background/50">
       <AnimatedBackground />
-  
+
       <nav className="fixed top-0 left-0 right-0 z-[100] bg-background/90 backdrop-blur-md shadow-sm">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <Link 
-              href="#home" 
-              scroll={false} 
-              className="flex items-center cursor-pointer"
-              onClick={() => scrollTo('home')}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
             >
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                className="flex items-center gap-3"
+              <Link 
+                href="#home" 
+                scroll={false} 
+                className="flex items-center cursor-pointer"
+                onClick={() => scrollTo('home')}
               >
-                <motion.h1 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                  SEBA
-                </motion.h1>
-                <span className="text-xs font-medium px-2 py-1 rounded-full bg-primary/10 text-primary">
-                  {currentContent.graduateStatus}
-                </span>
-              </motion.div>
-            </Link>
-  
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  className="flex items-center gap-3"
+                >
+                  <motion.h1 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                    {currentContent.name}
+                  </motion.h1>
+                  <span className="text-xs font-medium px-2 py-1 rounded-full bg-primary/10 text-primary">
+                    {currentContent.graduateStatus}
+                  </span>
+                </motion.div>
+              </Link>
+            </motion.div>
+
             <div className="hidden md:flex items-center space-x-2">
-              {navItems.map(item => (
-                <NavItem
+              {navItems.map((item, index) => (
+                <motion.div
                   key={item.id}
-                  title={item.title}
-                  active={activeSection === item.id}
-                  onClick={() => item.id !== 'resume' && scrollTo(item.id)}
-                  href={item.id === 'resume' ? '/cv-seba-salamah.pdf' : undefined}
-                  isRTL={isRTL}
-                />
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <NavItem
+                    title={item.title}
+                    active={activeSection === item.id}
+                    onClick={() => item.id !== 'resume' && scrollTo(item.id)}
+                    href={item.id === 'resume' ? '/resume' : undefined}
+                    isRTL={isRTL}
+                  />
+                </motion.div>
               ))}
             </div>
-  
+
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
-                <motion.a
-                  href="https://github.com/Seba-00"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ y: -2 }}
-                  className="p-1.5 rounded-lg text-text-secondary hover:text-primary transition-colors"
-                >
-                  <FaGithub className="w-4 h-4" />
-                </motion.a>
-  
-                <motion.a
-                  href="https://www.linkedin.com/in/seba-salamah-7916742b8/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ y: -2 }}
-                  className="p-1.5 rounded-lg text-text-secondary hover:text-primary transition-colors"
-                >
-                  <FaLinkedin className="w-4 h-4" />
-                </motion.a>
+                {socialLinks.map((social, index) => (
+                  <motion.a
+                    key={social.href}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 + index * 0.1 }}
+                    whileHover={{ y: -2 }}
+                    className="p-1.5 rounded-lg text-text-secondary hover:text-primary transition-colors"
+                  >
+                    <social.Icon className="w-4 h-4" />
+                  </motion.a>
+                ))}
               </div>
-  
+
               <div className="h-5 w-px bg-border/20" />
-  
+
               <motion.button
                 onClick={toggleLanguage}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.7 }}
                 className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-text-secondary hover:text-primary transition-colors text-sm"
                 whileHover={{ scale: 1.05 }}
               >
@@ -628,25 +1125,31 @@ export default function Hero() {
                   {language === 'EN' ? 'عربي' : 'English'}
                 </span>
               </motion.button>
-  
+
               <motion.button
                 onClick={toggleTheme}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.8 }}
                 className="p-1.5 rounded-lg text-text-secondary hover:text-primary transition-colors"
                 whileHover={{ scale: 1.05 }}
               >
                 {isDark ? <FiSun className="w-4 h-4" /> : <FiMoon className="w-4 h-4" />}
               </motion.button>
-  
-              <button
+
+              <motion.button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="md:hidden p-1.5 rounded-lg text-text-secondary"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.9 }}
               >
                 {isMenuOpen ? <FiX className="w-5 h-5" /> : <FiMenu className="w-5 h-5" />}
-              </button>
+              </motion.button>
             </div>
           </div>
         </div>
-  
+
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div
@@ -666,12 +1169,15 @@ export default function Hero() {
                   </button>
                 </div>
                 <div className="space-y-2">
-                  {navItems.map(item => (
-                    <button
+                  {navItems.map((item, index) => (
+                    <motion.button
                       key={item.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
                       onClick={() => {
                         if (item.id === 'resume') {
-                          window.open('/cv-seba-salamah.pdf', '_blank');
+                          router.push('/resume');
                         } else {
                           scrollTo(item.id);
                         }
@@ -684,7 +1190,7 @@ export default function Hero() {
                       }`}
                     >
                       {item.title}
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
               </div>
@@ -692,78 +1198,71 @@ export default function Hero() {
           )}
         </AnimatePresence>
       </nav>
-  
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen text-center px-4 sm:px-6 lg:px-8">
+
+      <motion.div 
+        variants={stagger}
+        initial="initial"
+        animate="animate"
+        className="relative z-10 flex flex-col items-center justify-center min-h-screen text-center px-4 sm:px-6 lg:px-8"
+      >
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          variants={fadeInUp}
           className="max-w-3xl space-y-6"
         >
           <motion.div
+            variants={fadeInUp}
             className="font-mono text-base sm:text-lg text-primary/90"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
           >
             {currentContent.greeting}
           </motion.div>
-  
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            variants={fadeInUp}
             className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight"
           >
             <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
               {currentContent.name}
             </span>
           </motion.h1>
-  
           <div className="h-16 flex items-center justify-center">
-            <AnimatePresence mode='wait'>
+            <AnimatePresence mode="wait">
               <motion.div
                 key={currentRoleIndex}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
+                variants={fadeInUp}
                 className="text-xl sm:text-2xl font-medium text-text-secondary"
-                transition={{ duration: 0.3 }}
+                transition={{ duration: 0.2 }}
               >
                 {currentContent.roles[currentRoleIndex]}
               </motion.div>
             </AnimatePresence>
           </div>
-  
           <motion.p
+            variants={fadeInUp}
             className="text-base sm:text-lg text-text-secondary/90 max-w-xl mx-auto leading-relaxed"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
           >
             {currentContent.subtitle}
           </motion.p>
-  
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
+          <motion.div variants={fadeInUp}>
             <motion.button
               onClick={() => scrollTo('projects')}
-              className="group relative inline-flex items-center justify-center px-6 py-3 rounded-lg font-medium text-white bg-gradient-to-r from-primary to-secondary transition-shadow duration-300"
-              whileHover={{ scale: 1.02 }}
+              className="group relative inline-flex items-center justify-center px-6 py-3 rounded-lg font-medium text-white bg-gradient-to-r from-primary to-secondary transition-all duration-200"
+              whileHover={{ scale: 1.02, boxShadow: "0 4px 15px rgba(0,0,0,0.1)" }}
               whileTap={{ scale: 0.98 }}
             >
               <span className="relative z-10">{currentContent.projectButton}</span>
-              <div className="absolute inset-0 rounded-lg bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <motion.div
+                className="absolute inset-0 rounded-lg bg-white/10"
+                initial={{ opacity: 0 }}
+                whileHover={{ opacity: 1 }}
+                transition={{ duration: 0.2 }}
+              />
             </motion.button>
           </motion.div>
         </motion.div>
-      </div>
+      </motion.div>
     </div>
   );
 }
 
-
-// Throttle utility function
 function throttle(func, limit) {
   let lastFunc;
   let lastRan;
@@ -782,4 +1281,3 @@ function throttle(func, limit) {
     }
   };
 }
-
