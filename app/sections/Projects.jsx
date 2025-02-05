@@ -30,14 +30,6 @@ const content = {
         tags: ["Flutter", "Firebase", "Computer Vision"],
         detailsLink: "/projects/project2",
       },
-      {
-        title: "Weather Forecast Dashboard",
-        description: "An interactive weather dashboard using OpenWeatherMap API.",
-        image: "/images/project3.jpg",
-        github: "https://github.com/yourusername/weather-dashboard",
-        tags: ["JavaScript", "API Integration", "Chart.js"],
-        detailsLink: "/projects/project3",
-      },
     ],
   },
   AR: {
@@ -61,14 +53,6 @@ const content = {
         tags: ["فلاتر", "فايربيس", "رؤية الحاسب"],
         detailsLink: "/projects/project2",
       },
-      {
-        title: "لوحة توقعات الطقس",
-        description: "لوحة تحكم تفاعلية للطقس باستخدام واجهة برمجة تطبيقات OpenWeatherMap.",
-        image: "/images/project3.jpg",
-        github: "https://github.com/yourusername/weather-dashboard",
-        tags: ["جافاسكريبت", "تكامل API", "Chart.js"],
-        detailsLink: "/projects/project3",
-      },
     ],
   },
 };
@@ -82,8 +66,8 @@ const ScrollReveal = ({ children, delay = 0 }) => {
       ref={ref}
       initial={{ opacity: 0, y: 30 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-      transition={{ 
-        duration: 0.5, 
+      transition={{
+        duration: 0.5,
         delay,
         ease: [0.25, 0.1, 0.25, 1]
       }}
@@ -101,16 +85,18 @@ const ProjectCard = ({ project, isRTL, index }) => {
       <motion.div
         className="relative h-full backdrop-blur-sm bg-background-card/30 border border-border rounded-xl overflow-hidden group"
         whileHover={{
-          y: -8,
+          y: -10,
+          scale: 1.05,
           transition: { type: "spring", stiffness: 300 },
         }}
+        style={{ transition: 'transform 0.3s ease-in-out' }}
       >
         <div className="relative h-48 overflow-hidden">
           <Image
             src={project.image}
             alt={project.title}
             fill
-            className="object-cover transform transition-transform duration-500 group-hover:scale-105"
+            className="object-cover transform transition-transform duration-500 group-hover:scale-110"
             placeholder="blur"
             blurDataURL="/images/blur-pattern.png"
           />
@@ -166,7 +152,6 @@ const ProjectCard = ({ project, isRTL, index }) => {
   );
 };
 
-
 export default function Projects() {
   const { language } = useTheme();
   const currentContent = content[language];
@@ -174,9 +159,8 @@ export default function Projects() {
 
   return (
     <section
-    className="relative min-h-screen py-20"
-    dir={isRTL ? 'rtl' : 'ltr'}
-    
+      className="relative min-h-screen py-20"
+      dir={isRTL ? 'rtl' : 'ltr'}
     >
       <AnimatedBackground />
 
@@ -193,7 +177,7 @@ export default function Projects() {
             </div>
           </ScrollReveal>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8">
             {currentContent.projects.map((project, index) => (
               <ProjectCard 
                 key={index} 

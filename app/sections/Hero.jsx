@@ -861,7 +861,7 @@ const stagger = {
         }
       };
     }*/
-
+////////////////////////
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
@@ -949,8 +949,8 @@ export default function Hero() {
     EN: {
       greeting: "Hello, I'm",
       name: 'SEBA',
-      subtitle: 'Crafting digital experiences with code ✨',
-      roles: ['Full Stack Developer', 'UI/UX Enthusiast', 'Problem Solver', 'Tech Explorer'],
+      subtitle: 'Crafting digital experiences with code ',
+      roles: ['Full Stack Developer', 'UI/UX ', 'Problem Solver', 'Tech Explorer'],
       nav: {
         home: 'Home',
         about: 'About',
@@ -963,20 +963,20 @@ export default function Hero() {
       graduateStatus: 'Computer Science Graduate',
     },
     AR: {
-      greeting: 'مرحباً، أنا',
+      greeting: 'أهلا ، أنا',
       name: 'صبا',
-      subtitle: 'أصنع تجارب رقمية بالكود ✨',
+      subtitle: 'أصنع تجارب رقمية بالكود ',
       roles: ['مطور ويب شامل', 'مصمم واجهات', 'حلال مشاكل', 'مستكشف تقني'],
       nav: {
         home: 'الرئيسية',
         about: 'نبذة عني',
         skills: 'المهارات',
         projects: 'المشاريع',
-        contact: 'اتصل بي',
+        contact: ' تواصل معي',
         resume: 'السيرة الذاتية',
       },
       projectButton: 'شاهد مشاريعي',
-      graduateStatus: 'خريج علوم الحاسوب',
+      graduateStatus: 'خريجة علوم الحاسوب',
     },
   }), []);
 

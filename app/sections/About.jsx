@@ -13,11 +13,11 @@ import Link from 'next/link';
 const content = {
   EN: {
     title: "About Me",
-    bio: "As a Computer Science graduate from King Abdulaziz University, I blend Saudi innovation with global tech trends. My journey in tech started with curiosity and evolved into a passion for creating impactful digital solutions.",
+    bio: "As a Computer Science graduate from King Abdulaziz University, I Saudi innovation with global tech trends. My journey in tech started with curiosity and evolved into a passion for creating impactful digital solutions.",
     education: {
       degree: "Bachelor in Computer Science",
       university: "King Abdulaziz University",
-      year: "2020-2024"
+      year: "2020-2025"
     },
     traits: [
       "Full Stack Developer",
@@ -36,11 +36,11 @@ const content = {
   },
   AR: {
     title: "نبذة عني",
-    bio: "كخريج علوم الحاسب من جامعة الملك عبدالعزيز، أمزج بين الابتكار السعودي واتجاهات التقنية العالمية. بدأت رحلتي في التقنية بالفضول وتطورت إلى شغف بإنشاء حلول رقمية مؤثرة.",
+    bio: "خريجة علوم حاسب من جامعة الملك عبدالعزيز، أمزج بين الابتكار واتجاهات التقنية العالمية. بدأت رحلتي في التقنية بالفضول وتطورت إلى شغف بإنشاء حلول تقنية مؤثرة.",
     education: {
       degree: "بكالوريوس علوم الحاسب",
       university: "جامعة الملك عبدالعزيز",
-      year: "٢٠٢٠-٢٠٢٤"
+      year: "٢٠٢٠-٢٠٢٥"
     },
     traits: [
       "مطور ويب شامل",
@@ -253,7 +253,7 @@ export default function About() {
                 transition={{ duration: 0.2 }}
               >
                 <Image
-                  src="/images/graduate.png"
+                  src="/images/graduating-student.png"
                   alt="Profile"
                   fill
                   className="object-cover"
