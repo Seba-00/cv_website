@@ -6,14 +6,14 @@
 @layer base {
   :root {
 
-    /* Calm Blues Theme */
---color-primary: 96 125 139;    /* Muted Blue #607D8B (Headline 1) */
---color-secondary: 38 198 218;  /* Light Teal #26C6DA (Headline 2) */
---color-background: 240 248 255; /* Light Blue #F0F8FF */
---color-foreground: 50 50 50;   /* Charcoal Gray #323232 (Main Text) */
---color-muted: 120 120 120;     /* Soft Gray #787878 (Subtle Text) */
---color-border: 200 200 200;    /* Light Gray #C8C8C8 */
---gradient-highlight: linear-gradient(135deg, #607D8B 0%, #26C6DA 100%);
+/* Modern Serene Light Theme */
+--color-primary: 41 128 185;     /* Ocean Blue #2980b9 */
+--color-secondary: 52 152 219;   /* Clear Blue #3498db */
+--color-background: 248 250 252; /* Crisp White #f8fafc */
+--color-foreground: 44 62 80;    /* Deep Slate #2c3e50 */
+--color-muted: 149 165 166;      /* Subtle Gray #95a5a6 */
+--color-border: 223 230 233;     /* Soft Border #dfe6e9 */
+--gradient-highlight: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
 
      
 

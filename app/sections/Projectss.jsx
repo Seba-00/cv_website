@@ -4,7 +4,7 @@ import { useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, useInView } from 'framer-motion';
-import { useTheme } from '../../app/context/ThemeContext';
+import { useTheme } from '../context/ThemeContext';
 import { FaGithub, FaInfoCircle } from 'react-icons/fa';
 import { AnimatedBackground } from '../components/AnimatedBackground';
 
@@ -158,8 +158,7 @@ export default function Projects() {
   const isRTL = language === "AR";
 
   return (
-    <section
-      className="relative min-h-screen py-20"
+    <section id="projects" className="relative min-h-screen py-20"
       dir={isRTL ? 'rtl' : 'ltr'}
     >
       <AnimatedBackground />

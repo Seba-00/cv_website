@@ -1,3 +1,5 @@
+
+
 // app/page.js
 'use client';
 import { useScrollAnimation } from './hooks/useScrollAnimation'
@@ -5,7 +7,7 @@ import { useTheme } from './context/ThemeContext'
 import Hero from './sections/Hero'
 import About from './sections/About'
 import Skills from './sections/Skills'
-import Projects from './sections/Projects'
+import Projects from './sections/Projectss'
 import Contact from './sections/Contact'
 
 export default function Home() {
