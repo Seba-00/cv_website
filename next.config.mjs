@@ -10,14 +10,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  compress: true,
-  swcMinify: true,
-  experimental: {
-    optimizeCss: true
-  },
-  poweredByHeader: false
 };
 
 export default nextConfig;
-
  
