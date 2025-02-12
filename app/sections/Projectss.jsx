@@ -5,28 +5,26 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion, useInView } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
-import { FaGithub, FaInfoCircle } from 'react-icons/fa';
+import { FiArrowRight, FiExternalLink } from 'react-icons/fi';
 import { AnimatedBackground } from '../components/AnimatedBackground';
 
 const content = {
   EN: {
     title: "Projects",
-    subtitle: "Showcasing My Digital Creations",
-    viewDetails: "View Details",
+   
+    viewDetails: "Explore Project",
     projects: [
       {
         title: "Eye Disease Analysis System",
         description: "Advanced AI-powered eye disease detection, segmentation, and classification system",
         image: "/images/EYE.png",
-        github: "https://github.com/yourusername/ecommerce-platform",
         tags: ["Python", "Google Colab", "Computer Vision"],
         detailsLink: "/projects/project1",
       },
       {
         title: "Geovision Explorer",
-        description: "A responsive task management application with real-time updates.",
+        description: "Augmented Reality app transforming geometry education for children",
         image: "/images/geoo.png",
-        github: "https://github.com/yourusername/task-management-app",
         tags: ["Flutter", "Firebase", "Computer Vision"],
         detailsLink: "/projects/project2",
       },
@@ -34,22 +32,20 @@ const content = {
   },
   AR: {
     title: "المشاريع",
-    subtitle: "عرض إبداعاتي الرقمية",
-    viewDetails: "عرض التفاصيل",
+    
+    viewDetails: "استكشف المشروع",
     projects: [
       {
         title: "نظام تحليل أمراض العين",
-        description: "نظام متقدم للكشف عن أمراض العين والتجزئة والتصنيف مدعوم بالذكاء الاصطناعي",
+        description: "نظام متقدم للكشف عن أمراض العين باستخدام بالذكاء الاصطناعي",
         image: "/images/EYE.png",
-        github: "https://github.com/yourusername/ecommerce-platform",
         tags: ["بايثون", "جوجل كولاب", "رؤية الحاسب"],
         detailsLink: "/projects/project1",
       },
       {
-        title: "مستكشف الرؤية الجغرافية",
-        description: "تطبيق إدارة مهام متجاوب مع تحديثات في الوقت الفعلي.",
+        title: "الرؤية الهندسية",
+        description: "تطبيق يجعل تعلم الاشكال الهندسية ممتعة للأطفال",
         image: "/images/geoo.png",
-        github: "https://github.com/yourusername/task-management-app",
         tags: ["فلاتر", "فايربيس", "رؤية الحاسب"],
         detailsLink: "/projects/project2",
       },
@@ -59,15 +55,15 @@ const content = {
 
 const ScrollReveal = ({ children, delay = 0 }) => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-50px" });
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 30 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 50 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
       transition={{
-        duration: 0.5,
+        duration: 0.8,
         delay,
         ease: [0.25, 0.1, 0.25, 1]
       }}
@@ -83,69 +79,59 @@ const ProjectCard = ({ project, isRTL, index }) => {
   return (
     <ScrollReveal delay={index * 0.2}>
       <motion.div
-        className="relative h-full backdrop-blur-sm bg-background-card/30 border border-border rounded-xl overflow-hidden group"
-        whileHover={{
-          y: -10,
-          scale: 1.05,
-          transition: { type: "spring", stiffness: 300 },
-        }}
-        style={{ transition: 'transform 0.3s ease-in-out' }}
+        className="group relative h-full overflow-hidden rounded-2xl bg-gradient-to-br from-background-card/80 to-background-card/40 backdrop-blur-lg border border-white/10"
+        whileHover={{ y: -8 }}
+        transition={{ duration: 0.3, ease: 'easeOut' }}
       >
-        <div className="relative h-48 overflow-hidden">
+        <div className="relative h-56 overflow-hidden rounded-t-2xl">
           <Image
             src={project.image}
             alt={project.title}
             fill
-            className="object-cover transform transition-transform duration-500 group-hover:scale-110"
+            className="object-cover transition-transform duration-700 group-hover:scale-110"
             placeholder="blur"
             blurDataURL="/images/blur-pattern.png"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/80" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/20 to-background/90" />
         </div>
 
-        <div className="p-6 flex flex-col min-h-[200px]">
-          <div className="flex items-start justify-between gap-4">
-            <h3 className="text-xl font-bold text-text-primary">
+        <div className="relative p-6">
+          <div className="space-y-3">
+            <h3 className="text-2xl font-bold text-text-primary">
               {project.title}
             </h3>
-            <motion.a
-              href={project.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-text-secondary hover:text-primary"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <FaGithub size={20} />
-            </motion.a>
-          </div>
+            
+            <p className="text-sm text-text-secondary/80 leading-relaxed">
+              {project.description}
+            </p>
 
-          <p className="text-sm text-text-secondary leading-relaxed mt-2">
-            {project.description}
-          </p>
-
-          <div className="mt-auto pt-4">
-            <div className="flex flex-wrap gap-2 mb-3">
-              {project.tags && project.tags.map((tag, tagIndex) => (
+            <div className="flex flex-wrap gap-2 pt-2">
+              {project.tags.map((tag, tagIndex) => (
                 <span
                   key={tagIndex}
-                  className="px-3 py-1 text-xs font-medium rounded-full bg-primary/10 text-primary"
+                  className="px-3 py-1 text-xs font-medium rounded-full bg-primary/10 text-primary backdrop-blur-sm"
                 >
                   {tag}
                 </span>
               ))}
             </div>
-
-            <Link href={project.detailsLink}>
-              <motion.div
-                className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-md bg-primary/10 hover:bg-primary/20 text-primary transition-colors"
-                whileHover={{ x: isRTL ? -3 : 3 }}
-              >
-                <span>{viewDetails}</span>
-                <FaInfoCircle size={12} />
-              </motion.div>
-            </Link>
           </div>
+
+          <Link href={project.detailsLink}>
+            <motion.div
+              className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+              whileHover={{ x: isRTL ? -5 : 5 }}
+            >
+              <span>{viewDetails}</span>
+              {isRTL ? <FiArrowRight className="rotate-180" /> : <FiArrowRight />}
+            </motion.div>
+          </Link>
+        </div>
+
+        {/* Decorative elements */}
+        <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0" />
+          <div className="absolute top-0 right-0 w-1 h-full bg-gradient-to-b from-primary/20 via-primary/0 to-primary/20" />
         </div>
       </motion.div>
     </ScrollReveal>
@@ -158,7 +144,9 @@ export default function Projects() {
   const isRTL = language === "AR";
 
   return (
-    <section id="projects" className="relative min-h-screen py-20"
+    <section 
+      id="projects" 
+      className="relative min-h-screen py-20 overflow-hidden"
       dir={isRTL ? 'rtl' : 'ltr'}
     >
       <AnimatedBackground />
@@ -167,16 +155,26 @@ export default function Projects() {
         <div className="max-w-6xl mx-auto">
           <ScrollReveal>
             <div className="text-center mb-16">
-              <h1 className="text-4xl font-bold text-text-primary mb-4">
+              <motion.h1 
+                className="text-5xl font-bold bg-gradient-to-r from-primary via-primary/80 to-secondary bg-clip-text text-transparent mb-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              >
                 {currentContent.title}
-              </h1>
-              <p className="text-lg text-text-secondary">
+              </motion.h1>
+              <motion.p 
+                className="text-lg text-text-secondary/80"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+              >
                 {currentContent.subtitle}
-              </p>
+              </motion.p>
             </div>
           </ScrollReveal>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 gap-8 px-4">
             {currentContent.projects.map((project, index) => (
               <ProjectCard 
                 key={index} 

@@ -17,7 +17,7 @@ const content = {
       name: "Your Name",
       email: "Your Email",
       message: "Your Message",
-      submit: "Send It My Way!"
+      submit: "Send It "
     },
     toasts: {
       success: "Message sent successfully! I'll get back to you soon 🚀",
@@ -26,12 +26,12 @@ const content = {
   },
   AR: {
     title: "لا تتردد في التواصل معي",
-    subtitle: "تواصل معي",
+    subtitle: " :)",
     formLabels: {
       name: "اسمك",
       email: "بريدك الإلكتروني",
       message: "رسالتك",
-      submit: "أرسلها إلي!"
+      submit: "إرسال!"
     },
     toasts: {
       success: "تم إرسال الرسالة بنجاح! سأرد عليك قريبًا 🚀",
@@ -226,7 +226,7 @@ export default function Contact() {
               <ScrollReveal delay={0.2}>
                 <div className="bg-background-card/30 backdrop-blur-sm border border-border rounded-xl p-6">
                   <h3 className="text-2xl font-bold mb-4 text-text-primary">
-                    {language === 'EN' ? "Let's Connect" : "تواصل معنا"}
+                    {language === 'EN' ? "Let's Connect" : "    حساباتي الاجتماعية   " }
                   </h3>
                   <div className="space-y-4">
                     {socialLinks.map((link, index) => (

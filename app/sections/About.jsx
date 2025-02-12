@@ -235,7 +235,7 @@ export default function About() {
 
               <ScrollReveal delay={0.6}>
                 <motion.button
-                  onClick={() => window.open('/cv-seba-salamah.pdf', '_blank')}
+                  onClick={() => window.open('/SEBA_CV.pdf', '_blank')}
                   className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}

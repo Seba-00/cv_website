@@ -3,14 +3,10 @@ const nextConfig = {};
 
 export default nextConfig;*/
 
-/** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
-  reactStrictMode: true,
   images: {
-    unoptimized: true,
+    unoptimized: false,
+    domains: [], // add your image domains here
   },
 };
-
-export default nextConfig;
- 

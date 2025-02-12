@@ -1,14 +1,14 @@
-
-
-// app/page.js
 'use client';
+import dynamic from 'next/dynamic'
 import { useScrollAnimation } from './hooks/useScrollAnimation'
 import { useTheme } from './context/ThemeContext'
-import Hero from './sections/Hero'
-import About from './sections/About'
-import Skills from './sections/Skills'
-import Projects from './sections/Projectss'
-import Contact from './sections/Contact'
+
+// Dynamically import heavy components
+const Hero = dynamic(() => import('./sections/Hero'), { ssr: false })
+const About = dynamic(() => import('./sections/About'), { ssr: false })
+const Skills = dynamic(() => import('./sections/Skills'), { ssr: false })
+const Projects = dynamic(() => import('./sections/Projectss'), { ssr: false })
+const Contact = dynamic(() => import('./sections/Contact'), { ssr: false })
 
 export default function Home() {
   useScrollAnimation();
