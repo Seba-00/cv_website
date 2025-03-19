@@ -20,8 +20,7 @@ const content = {
       "Child-friendly UI with engaging animations",
       "3D shape visualization and manipulation",
       "Progress tracking and achievement system",
-      "Parent/teacher dashboard for monitoring",
-      "Offline mode for continuous learning"
+      "Parent dashboard for monitoring",
     ],
     technical: {
       title: "Technical Implementation",
@@ -52,7 +51,7 @@ const content = {
     }
   },
   AR: {
-    title: "جيو فيجن إكسبلورر",
+    title: "جيوفيجن إكسبلورر",
     description: "تطبيق الواقع المعزز لجعل الهندسة ممتعة للأطفال",
     overview: "تطبيق تفاعلي بالواقع المعزز يحول محيط الطفل إلى فصل دراسي افتراضي. يستخدم رؤية الحاسوب للتعرف على الأشياء في الوقت الحقيقي وعرض المبادئ الهندسية بشكل تفاعلي.",
     features: [
@@ -61,8 +60,8 @@ const content = {
       "واجهة مستخدم صديقة للأطفال",
       "تصور ثلاثي الأبعاد للأشكال",
       "تتبع التقدم والإنجازات",
-      "لوحة تحكم للأهل والمعلمين",
-      "وضع عدم الاتصال للتعلم المستمر"
+      "لوحة تحكم للأهل ",
+    
     ],
     technical: {
       title: "التنفيذ التقني",

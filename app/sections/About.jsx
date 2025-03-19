@@ -13,7 +13,7 @@ import Link from 'next/link';
 const content = {
   EN: {
     title: "About Me",
-    bio: "As a Computer Science graduate from King Abdulaziz University, I Saudi innovation with global tech trends. My journey in tech started with curiosity and evolved into a passion for creating impactful digital solutions.",
+    bio: "As a Computer Science graduate from King Abdulaziz University, My journey in tech started with curiosity and evolved into a passion for creating impactful digital solutions.",
     education: {
       degree: "Bachelor in Computer Science",
       university: "King Abdulaziz University",

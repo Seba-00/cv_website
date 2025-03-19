@@ -21,11 +21,8 @@ const content = {
     overview: "This AI-driven system analyzes retinal scans to identify various eye diseases using advanced computer vision techniques. The platform assists medical professionals in early diagnosis and treatment planning.",
     features: [
       "Multi-disease detection (Diabetic Retinopathy, Glaucoma, etc.)",
-      "High-accuracy image classification",
-      "Lesion localization with object detection",
-      "Retinal layer segmentation",
-      "Detailed diagnostic reports",
-      "Radiology-grade visualization tools"
+      "High-accuracy image classification"
+     
     ],
     technical: {
       title: "Technical Implementation",
@@ -62,10 +59,7 @@ const content = {
     features: [
       "الكشف عن أمراض متعددة (اعتلال الشبكية السكري، الجلوكوما، إلخ)",
       "تصنيف الصور بدقة عالية",
-      "تحديد موقع الآفات بكشف الأشياء",
-      "تقسيم طبقات الشبكية",
-      "تقارير تشخيصية مفصلة",
-      "أدوات تصوير شعاعي متقدمة"
+      "تحديد موقع الآفات بكشف الأشياء"
     ],
     technical: {
       title: "التنفيذ التقني",
