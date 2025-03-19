@@ -161,10 +161,7 @@ export default function Project2() {
               className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-border/10 hover:bg-border/20 transition-colors text-text-primary group"
               whileHover={{ scale: 1.05 }}
             >
-              <FaGithub className="w-6 h-6 group-hover:text-primary transition-colors" />
-              <span className="text-lg font-medium">
-                {isRTL ? 'عرض على GitHub' : 'View on GitHub'}
-              </span>
+            
             </motion.a>
           </div>
         </div>

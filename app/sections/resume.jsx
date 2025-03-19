@@ -1,3 +1,4 @@
+// app/resume/page.tsx
 'use client';
 
 import React from 'react';
@@ -65,16 +66,14 @@ const Resume = () => {
             </motion.span>
           </motion.div>
 
-          <motion.a
+          <a
             href="/SEBA_CV.pdf"
-            download
+            download="SEBA_CV.pdf"
             className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-primary text-white hover:bg-primary/90 transition-all duration-300 shadow-lg hover:shadow-xl"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
           >
             <FiDownload className="w-5 h-5" />
             <span>Download CV</span>
-          </motion.a>
+          </a>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

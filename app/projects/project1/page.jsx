@@ -100,7 +100,6 @@ const content = {
 // =================
 // MAIN COMPONENT
 // =================
-
 export default function Project1() {
   const { language } = useTheme();
   const currentContent = content[language];
@@ -125,77 +124,68 @@ export default function Project1() {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-slate-900 to-slate-800">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-background to-background/50">
       <AnimatedBackground intensity="low" />
-
-      {/* Main Content Container */}
-      <motion.div
-        className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16"
+      
+      <motion.div 
+        className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
-       {/* Header Section */}
-<div className="flex flex-col md:flex-row justify-between items-start mb-12 gap-8">
-  <div className="flex-1 w-full">
-    <Link href="/#projects" scroll={false}>
-      <motion.div
-        className="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-slate-700/50 hover:bg-slate-700/70 transition-colors text-slate-200 mb-8"
-        whileHover={{ x: isRTL ? 8 : -8 }}
-      >
-        <FaArrowLeft className={`${isRTL ? 'ml-2 rotate-180' : 'mr-2'}`} />
-        {currentContent.links.back}
-      </motion.div>
-    </Link>
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row justify-between items-start gap-8 mb-12">
+          <div className="flex-1">
+            <Link href="/#projects" scroll={false}>
+              <motion.div
+                className="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-background/80 hover:bg-border/20 transition-colors text-text-secondary mb-8 border border-border/20"
+                whileHover={{ x: isRTL ? 8 : -8 }}
+              >
+                <FaArrowLeft className={`${isRTL ? 'ml-2 rotate-180' : 'mr-2'}`} />
+                {currentContent.links.back}
+              </motion.div>
+            </Link>
 
-    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
-      <motion.h1
-        className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent"
-        variants={itemVariants}
-      >
-        {currentContent.title}
-      </motion.h1>
-      
-      <motion.a
-        href={currentContent.links.github}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 transition-colors text-slate-100 group h-fit"
-        whileHover={{ scale: 1.05 }}
-      >
-        <FaGithub className="w-6 h-6 group-hover:text-blue-400 transition-colors" />
-        <span className="text-lg font-medium">
-          {isRTL ? 'عرض على GitHub' : 'View on GitHub'}
-        </span>
-      </motion.a>
-    </div>
+            <motion.h1
+              className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
+              variants={itemVariants}
+            >
+              {currentContent.title}
+            </motion.h1>
 
-    <motion.div
-      className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/50 shadow-xl"
-      variants={itemVariants}
-    >
-      <p className="text-xl text-slate-300 leading-relaxed">
-        {currentContent.description}
-      </p>
-    </motion.div>
-  </div>
-</div>
-       
-{/* Overview Section */}
-<motion.div 
-  className="bg-slate-800/50 p-8 rounded-2xl border border-slate-700/50 shadow-xl mb-16"
-  variants={itemVariants}
->
-  <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent">
-    {isRTL ? 'نظرة عامة' : 'System Overview'}
-  </h2>
-  <p className="text-xl text-slate-300 leading-relaxed">
-    {currentContent.overview}
-  </p>
-</motion.div>
+            <motion.p
+              className="text-lg text-text-secondary/90 mb-6"
+              variants={itemVariants}
+            >
+              {currentContent.description}
+            </motion.p>
 
+            <motion.a
+              href={currentContent.links.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-border/10 hover:bg-border/20 transition-colors text-text-primary group"
+              whileHover={{ scale: 1.05 }}
+            >
+             
+            </motion.a>
+          </div>
+        </div>
 
-        {/* Image Grid Section */}
+        {/* Overview Section */}
+        <motion.div 
+          className="bg-background/80 p-8 rounded-2xl backdrop-blur-lg border border-border/20 mb-16"
+          variants={itemVariants}
+        >
+          <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            {isRTL ? 'نظرة عامة' : 'Project Overview'}
+          </h2>
+          <p className="text-lg leading-relaxed text-text-secondary/90">
+            {currentContent.overview}
+          </p>
+        </motion.div>
+
+        {/* Image Grid */}
         <motion.div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16"
           variants={containerVariants}
@@ -203,9 +193,9 @@ export default function Project1() {
           {currentContent.images.map((image, index) => (
             <motion.div
               key={index}
-              className="relative aspect-[4/3] rounded-xl overflow-hidden border-2 border-slate-700/50 hover:border-blue-400/30 transition-all group"
+              className="relative aspect-[4/3] rounded-xl overflow-hidden border border-border/20 group"
               variants={itemVariants}
-              whileHover={{ scale: 1.02 }}
+              whileHover={{ scale: 1.03 }}
             >
               <Image
                 src={image}
@@ -214,7 +204,7 @@ export default function Project1() {
                 className="object-cover group-hover:scale-105 transition-transform"
                 quality={100}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent" />
             </motion.div>
           ))}
         </motion.div>
@@ -223,22 +213,22 @@ export default function Project1() {
         <div className="grid lg:grid-cols-2 gap-8 mb-16">
           {/* Features Section */}
           <motion.div
-            className="bg-slate-800/50 p-8 rounded-2xl border border-slate-700/50 shadow-xl"
+            className="bg-background/80 p-8 rounded-2xl backdrop-blur-lg border border-border/20"
             variants={itemVariants}
           >
-            <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">
+            <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
               {isRTL ? 'المميزات الرئيسية' : 'Key Features'}
             </h2>
             <div className="grid gap-4">
               {currentContent.features.map((feature, index) => (
                 <div
                   key={index}
-                  className="flex items-start gap-4 p-4 bg-slate-700/30 rounded-xl hover:bg-slate-700/50 transition-colors"
+                  className="flex items-start gap-4 p-4 bg-background/50 rounded-xl hover:bg-border/10 transition-colors"
                 >
-                  <div className="w-8 h-8 rounded-full bg-blue-400/10 flex items-center justify-center">
-                    <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                   </div>
-                  <p className="text-slate-300 flex-1">{feature}</p>
+                  <p className="text-text-secondary/90 flex-1 text-lg">{feature}</p>
                 </div>
               ))}
             </div>
@@ -246,26 +236,26 @@ export default function Project1() {
 
           {/* Technical Section */}
           <motion.div
-            className="bg-slate-800/50 p-8 rounded-2xl border border-slate-700/50 shadow-xl"
+            className="bg-background/80 p-8 rounded-2xl backdrop-blur-lg border border-border/20"
             variants={itemVariants}
           >
-            <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent">
+            <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
               {currentContent.technical.title}
             </h2>
 
             <div className="space-y-8">
               <div>
-                <h3 className="text-xl font-semibold mb-4 text-slate-200">
+                <h3 className="text-xl font-semibold mb-4 text-text-primary">
                   {isRTL ? 'المكدس التقني' : 'Technology Stack'}
                 </h3>
                 <div className="flex flex-wrap gap-3">
                   {currentContent.technical.stack.map((tech, index) => (
                     <motion.div
                       key={index}
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-700/50 hover:bg-slate-700/70 transition-colors text-slate-200"
+                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-background/50 hover:bg-border/10 transition-colors text-text-primary"
                       whileHover={{ scale: 1.05 }}
                     >
-                      <tech.icon className="w-5 h-5 text-blue-400" />
+                      <tech.icon className="w-5 h-5 text-primary" />
                       <span>{tech.name}</span>
                     </motion.div>
                   ))}
@@ -273,14 +263,14 @@ export default function Project1() {
               </div>
 
               <div>
-                <h3 className="text-xl font-semibold mb-4 text-slate-200">
+                <h3 className="text-xl font-semibold mb-4 text-text-primary">
                   {isRTL ? 'التحديات والحلول' : 'Challenges & Solutions'}
                 </h3>
                 <div className="space-y-4">
-                  <p className="p-4 bg-slate-700/30 rounded-xl text-slate-300">
+                  <p className="p-4 bg-background/50 rounded-xl text-text-secondary/90">
                     {currentContent.technical.challenges}
                   </p>
-                  <p className="p-4 bg-emerald-400/10 rounded-xl text-emerald-300 border border-emerald-400/20">
+                  <p className="p-4 bg-secondary/10 rounded-xl text-secondary border border-secondary/20">
                     {currentContent.technical.solutions}
                   </p>
                 </div>
@@ -292,13 +282,13 @@ export default function Project1() {
         {/* Video Section */}
         {currentContent.video && (
           <motion.div
-            className="bg-slate-800/50 p-8 rounded-2xl border border-slate-700/50 shadow-xl"
+            className="bg-background/80 p-8 rounded-2xl backdrop-blur-lg border border-border/20"
             variants={itemVariants}
           >
-            <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">
+            <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
               {isRTL ? 'عرض النظام' : 'System Demonstration'}
             </h2>
-            <div className="aspect-video rounded-xl overflow-hidden border-2 border-slate-700/50">
+            <div className="aspect-video rounded-xl overflow-hidden border border-border/20">
               <iframe
                 src={`https://www.youtube.com/embed/${currentContent.video}`}
                 className="w-full h-full"
