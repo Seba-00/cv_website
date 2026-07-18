@@ -1,156 +1,120 @@
-/* app/styles/globals.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/*
+  Design tokens — "نسيم الصبا"
+  Light: sea-mist morning over Jeddah. Dark: the same coast at night.
+  One accent (deep Red Sea teal); coral appears only in micro-moments.
+*/
 @layer base {
   :root {
-
-/* Elegant Modern Light Theme */
---color-primary: 34 107 163; /* Deep Teal #226BA3 */
---color-secondary: 124 36 99; /* Warm Coral #F06C45 */
---color-background: 245 245 247; /* Soft Off-White #F5F5F7 */
---color-foreground: 30 30 30; /* Dark Charcoal #1E1E1E */
---color-muted: 136 146 176; /* Cool Gray #8892B0 */
---color-border: 222 226 230; /* Subtle Border #DEE2E6 */
---gradient-highlight: linear-gradient(135deg, #226BA3 0%, #7c2463 100%); /* Elegant contrast between deep teal and coral */
-
+    --color-background: 247 246 242; /* mist white  #F7F6F2 */
+    --color-surface: 255 255 255;    /* card white  #FFFFFF */
+    --color-ink: 27 43 51;           /* sea ink     #1B2B33 */
+    --color-muted: 92 110 119;       /* soft ink    #5C6E77 */
+    --color-accent: 14 115 104;      /* deep teal   #0E7368 */
+    --color-coral: 199 90 60;        /* reef coral  #C75A3C */
+    --color-line: 228 226 218;       /* sand line   #E4E2DA */
   }
 
   .dark {
-    /* Dark Theme - Midnight Ocean */
-    --color-primary: 102 178 255;    /* Soft Blue #66B2FF */
-    --color-secondary: 255 110 127;  /* Coral Pink #FF6E7F */
-    --color-background: 22 28 45;    /* Deep Midnight #161C2D */
-    --color-foreground: 225 232 238; /* Pale Blue #E1E8EE */
-    --color-muted: 73 89 113;        /* Slate Blue #495971 */
-    --color-border: 45 55 72;        /* Dark Slate #2D3748 */
-    
-    /* Gradient with cool transition */
-    --gradient-highlight: linear-gradient(135deg, #66B2FF 0%, #FF6E7F 100%);
+    --color-background: 14 26 32;    /* sea night   #0E1A20 */
+    --color-surface: 20 36 44;       /* deep card   #14242C */
+    --color-ink: 233 239 235;        /* mist text   #E9EFEB */
+    --color-muted: 143 165 171;      /* faded mist  #8FA5AB */
+    --color-accent: 84 195 179;      /* sea glass   #54C3B3 */
+    --color-coral: 233 139 110;      /* warm coral  #E98B6E */
+    --color-line: 34 55 64;          /* deep line   #223740 */
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-background text-foreground transition-colors duration-300;
-    font-family: 'Inter', system-ui, sans-serif;
+    @apply bg-background text-ink font-body antialiased;
+    transition: background-color 0.4s ease, color 0.4s ease;
   }
 
-
-  /* Typography Enhancements */
-  h1, h2, h3 {
-    @apply font-bold tracking-tight;
+  ::selection {
+    background: rgb(var(--color-accent) / 0.2);
   }
 
-  h1 { @apply text-4xl md:text-6xl; }
-  h2 { @apply text-3xl md:text-4xl; }
-  h3 { @apply text-xl md:text-2xl; }
-
-  /* Enhanced Components */
-  .btn-primary {
-    @apply px-6 py-3 rounded-lg font-medium transition-all;
-    background: var(--gradient-highlight);
-    color: white;
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 15px -3px rgb(var(--color-primary)/0.3);
-    }
-  }
-
-  .card {
-    @apply p-6 rounded-2xl border border-border;
-    background: linear-gradient(
-      145deg,
-      rgb(var(--color-background)) 0%,
-      rgb(var(--color-background)/0.98) 100%
-    );
-    box-shadow: 0 4px 24px -6px rgb(0 0 0 / 0.05);
-  }
-
-  .nav-link {
-    @apply px-4 py-2 rounded-md hover:bg-primary/10 transition-colors;
-  }
-  @layer components {
-    .dark .bg-gradient-to-r {
-      --tw-gradient-from: rgb(var(--color-primary)/0.9);
-      --tw-gradient-to: rgb(var(--color-secondary)/0.9);
-    }
-  }
-
-
-  @layer components {
-    .project-grid {
-      perspective: 1000px;
-    }
-    
-    .project-card {
-      transform-style: preserve-3d;
-      will-change: transform, opacity;
-    }
-  
-  
-  }
-
-  /* Gradient Text */
-  .gradient-text {
-    background: var(--gradient-highlight);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+  :focus-visible {
+    outline: 2px solid rgb(var(--color-accent));
+    outline-offset: 3px;
+    border-radius: 2px;
   }
 }
 
-@keyframes playful-bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+@layer components {
+  .wrap {
+    @apply max-w-wrap mx-auto px-6 sm:px-8;
+  }
+
+  /* Section heading: latin display + arabic gloss share one baseline row */
+  .section-title {
+    @apply font-display text-3xl sm:text-4xl font-semibold tracking-tight;
+  }
+
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.2em] text-accent;
+  }
+
+  /* Underline that slides in on hover — the only link decoration used */
+  .link-slide {
+    background-image: linear-gradient(rgb(var(--color-accent)), rgb(var(--color-accent)));
+    background-size: 0% 1.5px;
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    transition: background-size 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  [dir='rtl'] .link-slide {
+    background-position: 100% 100%;
+  }
+  .link-slide:hover {
+    background-size: 100% 1.5px;
+  }
 }
 
-.logo {
-  animation: playful-bounce 3s ease-in-out infinite;
+/* Breeze lines — the signature. Long strokes drifting like wind paths. */
+@keyframes breeze-drift {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -2400; }
 }
 
-/* Add transitions only where needed */
-.theme-transition {
-  transition: background-color 0.3s, color 0.2s;
+.breeze-path {
+  stroke-dasharray: 900 1500;
+  animation: breeze-drift 90s linear infinite;
 }
 
-/* Light theme */
+.breeze-path-slow {
+  stroke-dasharray: 600 1800;
+  animation: breeze-drift 140s linear infinite reverse;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .breeze-path,
+  .breeze-path-slow {
+    animation: none;
+  }
+}
+
+/* Scrollbar tinted to the palette, quietly */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: rgb(var(--color-background));
+}
 ::-webkit-scrollbar-thumb {
-  background: rgb(var(--color-primary));
+  background: rgb(var(--color-line));
+  border-radius: 5px;
 }
-
-/* Dark theme */
-.dark ::-webkit-scrollbar-thumb {
-  background: rgb(var(--color-secondary));
-
-
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--color-muted));
 }
-
-
-.btn-gradient-animate {
-  background-size: 200% 200%;
-  background-position: 100% 50%;
-  transition: background-position 0.5s ease;
-}
-
-.btn-gradient-animate:hover {
-  background-position: 0% 50%;
-}
-
-
-
-@keyframes gradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-.animate-gradient {
-  animation: gradient 15s ease infinite;
-}
-
-
-
-
-
-
-

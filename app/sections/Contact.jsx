@@ -1,573 +1,169 @@
-
 'use client';
 
-import React, { useState, useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
-import { useTheme } from '../context/ThemeContext';
-import { FaGithub, FaLinkedin, FaEnvelope, FaWhatsapp } from 'react-icons/fa';
-import { AnimatedBackground } from '../components/AnimatedBackground';
-import ScrollToTop from '../components/ScrollToTop';
+import { useState } from 'react';
+import { FaGithub, FaLinkedin, FaWhatsapp } from 'react-icons/fa';
+import { FiMail } from 'react-icons/fi';
 import toast, { Toaster } from 'react-hot-toast';
+import { useTheme } from '../context/ThemeContext';
+import SectionHeader from '../components/SectionHeader';
+import Reveal from '../components/Reveal';
+import Breeze from '../components/Breeze';
 
 const content = {
   EN: {
-    title: "FIND ME ON",
-    subtitle: "Feel free to connect with me",
-    formLabels: {
-      name: "Your Name",
-      email: "Your Email",
-      message: "Your Message",
-      submit: "Send It "
+    title: 'Contact',
+    gloss: 'تواصل',
+    lede: 'Have a role, a project, or just a question? My inbox is open.',
+    emailLabel: 'Write to me at',
+    form: {
+      name: 'Name',
+      email: 'Email',
+      message: 'Message',
+      submit: 'Send message',
+      sending: 'Sending…',
     },
     toasts: {
-      success: "Message sent successfully! I'll get back to you soon 🚀",
-      error: "Oops! Something went wrong. Please try again 🛠️"
-    }
+      success: 'Message sent — I will get back to you soon.',
+      error: 'Something went wrong. Please try again.',
+    },
+    footer: 'Designed and built by Saba Salamah in Jeddah',
   },
   AR: {
-    title: "لا تتردد في التواصل معي",
-    subtitle: " :)",
-    formLabels: {
-      name: "اسمك",
-      email: "بريدك الإلكتروني",
-      message: "رسالتك",
-      submit: "إرسال!"
+    title: 'تواصل معي',
+    gloss: 'Contact',
+    lede: 'عندك فرصة عمل، مشروع، أو حتى سؤال؟ بريدي مفتوح دائماً.',
+    emailLabel: 'راسلني على',
+    form: {
+      name: 'الاسم',
+      email: 'البريد الإلكتروني',
+      message: 'الرسالة',
+      submit: 'إرسال الرسالة',
+      sending: 'جارٍ الإرسال…',
     },
     toasts: {
-      success: "تم إرسال الرسالة بنجاح! سأرد عليك قريبًا 🚀",
-      error: "عذرًا! حدث خطأ ما. يرجى المحاولة مرة أخرى 🛠️"
-    }
-  }
+      success: 'وصلت رسالتك — بردّ عليك قريباً.',
+      error: 'صار خطأ ما. حاول مرة ثانية.',
+    },
+    footer: 'صممته وبنيته صبا سلامة في جدة',
+  },
 };
 
-const ScrollReveal = ({ children, delay = 0 }) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-50px" });
+const socials = [
+  { icon: FaGithub, href: 'https://github.com/Seba-00', label: 'GitHub' },
+  { icon: FaLinkedin, href: 'https://www.linkedin.com/in/seba-salamah-7916742b8/', label: 'LinkedIn' },
+  { icon: FaWhatsapp, href: 'https://wa.me/966555948067', label: 'WhatsApp' },
+];
 
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 30 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-      transition={{ 
-        duration: 0.5, 
-        delay,
-        ease: [0.25, 0.1, 0.25, 1]
-      }}
-    >
-      {children}
-    </motion.div>
-  );
-};
-
-const InputField = ({ label, id, type = "text", rows, name }) => (
-  <div className="mb-4">
-    <label htmlFor={id} className="block text-sm font-medium mb-2 text-text-primary">
-      {label}
-    </label>
-    {rows ? (
-      <textarea
-        id={id}
-        name={name || id}
-        rows={rows}
-        className="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 transition-all duration-300 bg-primary/15 text-text-primary border border-primary/30"
-        required
-      />
-    ) : (
-      <input
-        type={type}
-        id={id}
-        name={name || id}
-        className="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 transition-all duration-300 bg-primary/15 text-text-primary border border-primary/30"
-        required
-      />
-    )}
-  </div>
-);
-
-const ContactForm = ({ content, isLoading, setIsLoading }) => {
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = 'https://formsubmit.co/sebasalamah00@gmail.com';
-
-    const formData = new FormData(e.target);
-    for (let [key, value] of formData.entries()) {
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = key;
-      input.value = value;
-      form.appendChild(input);
-    }
-
-    const configs = {
-      _captcha: 'false',
-      _template: 'table',
-      _next: window.location.href,
-      _subject: 'New Contact Form Message'
-    };
-
-    for (let [key, value] of Object.entries(configs)) {
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = key;
-      input.value = value;
-      form.appendChild(input);
-    }
-
-    document.body.appendChild(form);
-    toast.success(content.toasts.success);
-    
-    setTimeout(() => {
-      form.submit();
-      document.body.removeChild(form);
-      setIsLoading(false);
-      e.target.reset();
-    }, 1000);
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <InputField
-        label={content.formLabels.name}
-        id="name"
-        name="name"
-      />
-      <InputField
-        label={content.formLabels.email}
-        id="email"
-        name="email"
-        type="email"
-      />
-      <InputField
-        label={content.formLabels.message}
-        id="message"
-        name="message"
-        rows={5}
-      />
-      <motion.button
-        type="submit"
-        disabled={isLoading}
-        className="w-full py-3 rounded-lg font-bold text-white bg-primary transition-all duration-300"
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-      >
-        {isLoading ? (
-          <span className="flex items-center justify-center">
-            <motion.span
-              className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            />
-            <span className="ml-2">Sending...</span>
-          </span>
-        ) : (
-          content.formLabels.submit
-        )}
-      </motion.button>
-    </form>
-  );
-};
+const inputClass =
+  'w-full rounded-lg border border-line bg-background px-4 py-2.5 text-ink placeholder:text-muted/60 transition-colors focus:border-accent focus:outline-none';
 
 export default function Contact() {
   const { language } = useTheme();
-  const [isLoading, setIsLoading] = useState(false);
-  const currentContent = content[language];
-  const isRTL = language === 'AR';
+  const [isSending, setIsSending] = useState(false);
+  const t = content[language];
 
-  const socialLinks = [
-    { icon: FaGithub, href: "https://github.com/Seba-00", label: "GitHub" },
-    { icon: FaLinkedin, href: "https://www.linkedin.com/in/seba-salamah-7916742b8/", label: "LinkedIn" },
-    { icon: FaEnvelope, href: "mailto:sebasalamah00@gmail.com", label: "Email" },
-    { icon: FaWhatsapp, href: "https://wa.me/966555948067", label: "WhatsApp" },
-  ];
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSending(true);
+    try {
+      const formData = new FormData(e.target);
+      formData.append('_captcha', 'false');
+      formData.append('_template', 'table');
+      formData.append('_subject', 'New message from sabasalamah.dev');
+
+      const res = await fetch('https://formsubmit.co/ajax/sebasalamah00@gmail.com', {
+        method: 'POST',
+        headers: { Accept: 'application/json' },
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error('send failed');
+      toast.success(t.toasts.success);
+      e.target.reset();
+    } catch {
+      toast.error(t.toasts.error);
+    } finally {
+      setIsSending(false);
+    }
+  };
 
   return (
-    <section 
-      id="contact" 
-      className="relative min-h-screen py-20"
-      dir={isRTL ? 'rtl' : 'ltr'}
-    >
-      <ScrollToTop />
-      <Toaster
-        position="top-center"
-        toastOptions={{
-          duration: 3000,
-          className: 'bg-background-card text-text-primary border border-primary',
-          success: {
-            iconTheme: {
-              primary: 'rgb(var(--color-primary))',
-              secondary: 'rgb(var(--color-background))',
-            },
-          },
-        }}
-      />
-      
-      <AnimatedBackground />
-      
-      <div className="relative z-10 pt-32 pb-16 px-6">
-        <div className="max-w-6xl mx-auto">
-          <ScrollReveal>
-            <div className="text-center mb-16">
-              <h1 className="text-4xl font-bold text-text-primary mb-4">
-                {currentContent.title}
-              </h1>
-              <p className="text-lg text-text-secondary">
-                {currentContent.subtitle}
-              </p>
-            </div>
-          </ScrollReveal>
+    <section id="contact" className="relative overflow-hidden py-24 sm:py-32">
+      <Breeze className="opacity-60" />
+      <Toaster position="top-center" />
 
-          <div className="max-w-4xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-8">
-              <ScrollReveal delay={0.2}>
-                <div className="bg-background-card/30 backdrop-blur-sm border border-border rounded-xl p-6">
-                  <h3 className="text-2xl font-bold mb-4 text-text-primary">
-                    {language === 'EN' ? "Let's Connect" : "    حساباتي الاجتماعية   " }
-                  </h3>
-                  <div className="space-y-4">
-                    {socialLinks.map((link, index) => (
-                      <motion.a
-                        key={link.label}
-                        href={link.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center space-x-3 group"
-                        whileHover={{ x: isRTL ? -10 : 10 }}
-                      >
-                        <span className="w-10 h-10 rounded-full flex items-center justify-center bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
-                          <link.icon className="w-5 h-5 text-primary" />
-                        </span>
-                        <span className="text-lg text-text-secondary group-hover:text-primary transition-colors duration-300">
-                          {link.label}
-                        </span>
-                      </motion.a>
-                    ))}
-                  </div>
-                </div>
-              </ScrollReveal>
-              
-              <ScrollReveal delay={0.4}>
-                <div className="bg-background-card/30 backdrop-blur-sm border border-border rounded-xl p-6">
-                  <h3 className="text-2xl font-bold mb-4 text-text-primary">
-                    {language === 'EN' ? "Send a Message" : "أرسل رسالة"}
-                  </h3>
-                  <ContactForm
-                    content={currentContent}
-                    isLoading={isLoading}
-                    setIsLoading={setIsLoading}
-                  />
-                </div>
-              </ScrollReveal>
+      <div className="wrap relative z-10">
+        <SectionHeader title={t.title} gloss={t.gloss} lede={t.lede} />
+
+        <div className="grid gap-12 lg:grid-cols-2">
+          <Reveal delay={0.05}>
+            <p className="text-sm font-medium text-muted">{t.emailLabel}</p>
+            <a
+              href="mailto:sebasalamah00@gmail.com"
+              className="link-slide mt-2 inline-flex items-center gap-3 break-all font-display text-2xl font-semibold text-ink hover:text-accent sm:text-3xl"
+            >
+              <FiMail className="hidden h-6 w-6 shrink-0 text-accent sm:block" />
+              sebasalamah00@gmail.com
+            </a>
+
+            <div className="mt-10 flex gap-3">
+              {socials.map(({ icon: Icon, href, label }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className="rounded-lg border border-line bg-surface p-3 text-muted transition-colors hover:border-accent hover:text-accent"
+                >
+                  <Icon className="h-5 w-5" />
+                </a>
+              ))}
             </div>
-          </div>
+          </Reveal>
+
+          <Reveal delay={0.15}>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-ink">
+                    {t.form.name}
+                  </label>
+                  <input id="name" name="name" required className={inputClass} />
+                </div>
+                <div>
+                  <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-ink">
+                    {t.form.email}
+                  </label>
+                  <input id="email" name="email" type="email" required className={inputClass} />
+                </div>
+              </div>
+              <div>
+                <label htmlFor="message" className="mb-1.5 block text-sm font-medium text-ink">
+                  {t.form.message}
+                </label>
+                <textarea id="message" name="message" rows={5} required className={inputClass} />
+              </div>
+              <button
+                type="submit"
+                disabled={isSending}
+                className="w-full rounded-lg bg-accent px-6 py-3 font-medium text-background transition-transform hover:-translate-y-0.5 disabled:opacity-60 disabled:hover:translate-y-0 sm:w-auto"
+              >
+                {isSending ? t.form.sending : t.form.submit}
+              </button>
+            </form>
+          </Reveal>
         </div>
+
+        <footer className="mt-24 flex flex-col items-center gap-3 border-t border-line pt-8 text-center">
+          <span className="font-mark text-3xl text-accent/70" aria-hidden="true">
+            صبا
+          </span>
+          <p className="text-sm text-muted">
+            {t.footer} · {new Date().getFullYear()}
+          </p>
+        </footer>
       </div>
     </section>
   );
 }
-
-
-/*'use client';
-
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { useTheme } from '../context/ThemeContext';
-import { FaGithub, FaLinkedin, FaEnvelope, FaWhatsapp } from 'react-icons/fa';
-import { AnimatedBackground } from '../components/AnimatedBackground';
-import toast, { Toaster } from 'react-hot-toast';
-
-const content = {
-  EN: {
-    title: "FIND ME ON",
-    subtitle: "Feel free to connect with me",
-    formLabels: {
-      name: "Your Name",
-      email: "Your Email",
-      message: "Your Message",
-      submit: "Send It My Way!"
-    },
-    toasts: {
-      success: "Message sent successfully! I'll get back to you soon 🚀",
-      error: "Oops! Something went wrong. Please try again 🛠️"
-    }
-  },
-  AR: {
-    title: "لا تتردد في التواصل معي",
-    subtitle: "تواصل معي",
-    formLabels: {
-      name: "اسمك",
-      email: "بريدك الإلكتروني",
-      message: "رسالتك",
-      submit: "أرسلها إلي!"
-    },
-    toasts: {
-      success: "تم إرسال الرسالة بنجاح! سأرد عليك قريبًا 🚀",
-      error: "عذرًا! حدث خطأ ما. يرجى المحاولة مرة أخرى 🛠️"
-    }
-  }
-};
-
-const AnimatedTitle = ({ text }) => {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.3,
-      },
-    },
-  };
-
-  const wordVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.5,
-        ease: "easeOut",
-      },
-    },
-  };
-
-  const words = text.split(" ");
-
-  return (
-    <motion.h1
-      className="text-4xl md:text-6xl font-bold mb-4 relative z-10 text-text-primary"
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
-      {words.map((word, index) => (
-        <motion.span
-          key={index}
-          variants={wordVariants}
-          className="inline-block mx-1"
-        >
-          {word}
-        </motion.span>
-      ))}
-    </motion.h1>
-  );
-};
-
-const InputField = ({ label, id, type = "text", rows, name }) => (
-  <div className="mb-4">
-    <label htmlFor={id} className="block text-sm font-medium mb-2 text-text-primary">
-      {label}
-    </label>
-    {rows ? (
-      <textarea
-        id={id}
-        name={name || id}
-        rows={rows}
-        className="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 transition-all duration-300 bg-primary/15 text-text-primary border border-primary/30"
-        required
-      />
-    ) : (
-      <input
-        type={type}
-        id={id}
-        name={name || id}
-        className="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 transition-all duration-300 bg-primary/15 text-text-primary border border-primary/30"
-        required
-      />
-    )}
-  </div>
-);
-
-const ContactForm = ({ content, isLoading, setIsLoading }) => {
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = 'https://formsubmit.co/sebasalamah00@gmail.com';
-
-    const formData = new FormData(e.target);
-    for (let [key, value] of formData.entries()) {
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = key;
-      input.value = value;
-      form.appendChild(input);
-    }
-
-    const configs = {
-      _captcha: 'false',
-      _template: 'table',
-      _next: window.location.href,
-      _subject: 'New Contact Form Message'
-    };
-
-    for (let [key, value] of Object.entries(configs)) {
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = key;
-      input.value = value;
-      form.appendChild(input);
-    }
-
-    document.body.appendChild(form);
-    toast.success(content.toasts.success);
-    
-    setTimeout(() => {
-      form.submit();
-      document.body.removeChild(form);
-      setIsLoading(false);
-      e.target.reset();
-    }, 1000);
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <InputField
-        label={content.formLabels.name}
-        id="name"
-        name="name"
-      />
-      <InputField
-        label={content.formLabels.email}
-        id="email"
-        name="email"
-        type="email"
-      />
-      <InputField
-        label={content.formLabels.message}
-        id="message"
-        name="message"
-        rows={5}
-      />
-      <motion.button
-        type="submit"
-        disabled={isLoading}
-        className="w-full py-3 rounded-lg font-bold text-white bg-primary transition-all duration-300"
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-      >
-        {isLoading ? (
-          <span className="flex items-center justify-center">
-            <motion.span
-              className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            />
-            <span className="ml-2">Sending...</span>
-          </span>
-        ) : (
-          content.formLabels.submit
-        )}
-      </motion.button>
-    </form>
-  );
-};
-
-export default function Contact() {
-  const { language } = useTheme();
-  const [isLoading, setIsLoading] = useState(false);
-  const currentContent = content[language];
-  const isRTL = language === 'AR';
-
-  const socialLinks = [
-    { icon: FaGithub, href: "https://github.com/Seba-00", label: "GitHub" },
-    { icon: FaLinkedin, href: "https://www.linkedin.com/in/seba-salamah-7916742b8/", label: "LinkedIn" },
-    { icon: FaEnvelope, href: "mailto:sebasalamah00@gmail.com", label: "Email" },
-    { icon: FaWhatsapp, href: "https://wa.me/966555948067", label: "WhatsApp" },
-  ];
-
-  return (
-    <section id="contact" className={`min-h-screen relative overflow-hidden py-20 bg-background ${isRTL ? 'rtl' : 'ltr'}`}>
-      <Toaster
-        position="top-center"
-        toastOptions={{
-          duration: 3000,
-          className: 'bg-background-card text-text-primary border border-primary',
-          success: {
-            iconTheme: {
-              primary: 'rgb(var(--color-primary))',
-              secondary: 'rgb(var(--color-background))',
-            },
-          },
-        }}
-      />
-      
-      <AnimatedBackground />
-      
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center mb-16">
-          <AnimatedTitle text={currentContent.title} />
-          <motion.p 
-            className="text-xl text-text-secondary"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-          >
-            {currentContent.subtitle}
-          </motion.p>
-        </div>
-
-        <div className="max-w-4xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-8">
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <div className="bg-background-card backdrop-blur-md rounded-lg shadow-xl p-6">
-                <h3 className="text-2xl font-bold mb-4 text-primary">
-                  {language === 'EN' ? "Let's Connect" : "تواصل معنا"}
-                </h3>
-                <div className="space-y-4">
-                  {socialLinks.map((link, index) => (
-                    <motion.a
-                      key={link.label}
-                      href={link.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center space-x-3 group"
-                      whileHover={{ x: 10 }}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                    >
-                      <span className="w-10 h-10 rounded-full flex items-center justify-center transition-colors duration-300 bg-primary/20">
-                        <link.icon className="w-5 h-5 text-primary" />
-                      </span>
-                      <span className="text-lg transition-colors duration-300 text-text-primary">
-                        {link.label}
-                      </span>
-                    </motion.a>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <div className="bg-background-card backdrop-blur-md rounded-lg shadow-xl p-6">
-                <h3 className="text-2xl font-bold mb-4 text-primary">
-                  {language === 'EN' ? "Send a Message" : "أرسل رسالة"}
-                </h3>
-                <ContactForm
-                  content={currentContent}
-                  isLoading={isLoading}
-                  setIsLoading={setIsLoading}
-                />
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}*/

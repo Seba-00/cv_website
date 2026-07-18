@@ -1,53 +1,83 @@
-'use client';
-import { usePathname } from 'next/navigation'
+import { Bricolage_Grotesque, Figtree, Alexandria, Reem_Kufi } from 'next/font/google';
 import { ThemeProvider } from './context/ThemeContext';
-import dynamic from 'next/dynamic';
 import './styles/globals.css';
 
-// Dynamically import AnimatedBackground with no SSR
-const AnimatedBackground = dynamic(
-  () => import('./components/AnimatedBackground'),
-  { ssr: false }
-);
+const display = Bricolage_Grotesque({
+  subsets: ['latin'],
+  variable: '--font-display',
+  display: 'swap',
+});
 
-// Dynamically import ScrollToTop with no SSR
-const ScrollToTop = dynamic(
-  () => import('./components/ScrollToTop'),
-  { ssr: false }
-);
+const body = Figtree({
+  subsets: ['latin'],
+  variable: '--font-body',
+  display: 'swap',
+});
+
+const arabic = Alexandria({
+  subsets: ['arabic'],
+  variable: '--font-arabic',
+  display: 'swap',
+});
+
+const mark = Reem_Kufi({
+  subsets: ['arabic'],
+  weight: '500',
+  variable: '--font-mark',
+  display: 'swap',
+});
+
+export const metadata = {
+  metadataBase: new URL('https://cv-website-three-psi.vercel.app'),
+  title: 'Saba Salamah — Application Developer',
+  description:
+    'Application developer in Jeddah building AI-powered platforms, automation workflows, and full-stack web apps. Computer Science graduate from King Abdulaziz University.',
+  keywords: [
+    'Saba Salamah',
+    'صبا سلامة',
+    'Application Developer',
+    'Full Stack Developer',
+    'Jeddah',
+    'Saudi Arabia',
+  ],
+  openGraph: {
+    title: 'Saba Salamah — Application Developer',
+    description:
+      'AI-powered platforms, automation workflows, and full-stack web apps. Jeddah, Saudi Arabia.',
+    type: 'website',
+    locale: 'en_US',
+    alternateLocale: 'ar_SA',
+  },
+};
+
+// Applies saved theme + language before first paint, so there is no flash
+// of the wrong mode and no wrong text direction.
+const themeInit = `
+(function () {
+  try {
+    var theme = localStorage.getItem('theme');
+    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (theme === 'dark' || (!theme && prefersDark)) {
+      document.documentElement.classList.add('dark');
+    }
+    var lang = localStorage.getItem('language');
+    if (lang === 'AR') {
+      document.documentElement.lang = 'ar';
+      document.documentElement.dir = 'rtl';
+    }
+  } catch (e) {}
+})();
+`;
 
 export default function RootLayout({ children }) {
-  const pathname = usePathname()
-  const isHeroPage = pathname === '/'
-
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
         <meta name="color-scheme" content="light dark" />
-        <link 
-          rel="preconnect" 
-          href="https://fonts.googleapis.com" 
-        />
-        <link 
-          rel="preconnect" 
-          href="https://fonts.gstatic.com" 
-          crossOrigin="anonymous"
-        />
-        <link 
-          href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" 
-          rel="stylesheet"
-          media="print"
-          onLoad="this.media='all'"
-        />
+        <script dangerouslySetInnerHTML={{ __html: themeInit }} />
       </head>
-      <body className="relative">
-        <ThemeProvider>
-          <AnimatedBackground />
-          <div className="relative z-10">
-            {children}
-          </div>
-          {!isHeroPage && <ScrollToTop />}
-        </ThemeProvider>
+      <body className={`${display.variable} ${body.variable} ${arabic.variable} ${mark.variable}`}>
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );
